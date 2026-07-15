@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Data.Configurations;
 
+/// <summary>
+/// Конфигурация таблицы пользователей
+/// </summary>
 public class UserConfiguration: IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
@@ -17,9 +20,8 @@ public class UserConfiguration: IEntityTypeConfiguration<User>
             .HasMaxLength(255);
         
         builder.Property(x => x.Role)
+            .HasDefaultValue(Role.User)
             .HasConversion<string>()
             .HasMaxLength(30);
-        
-        builder.HasIndex(x => x.Login);
     }
 }

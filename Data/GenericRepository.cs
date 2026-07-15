@@ -4,10 +4,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Data;
 
+/// <inheritdoc />
 public class GenericRepository<TEntity, TKey>(AppDbContext dbContext) 
     : IGenericRepository<TEntity, TKey> 
     where TEntity : class
 {
+    /// <inheritdoc />
     public async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return await dbContext.Set<TEntity>()
@@ -15,12 +17,14 @@ public class GenericRepository<TEntity, TKey>(AppDbContext dbContext)
             .ToListAsync(cancellationToken);
     }
 
+    /// <inheritdoc />
     public async Task<TEntity?> GetByIdAsync(TKey id, CancellationToken cancellationToken = default)
     {
         return await dbContext.Set<TEntity>()
             .FindAsync([id], cancellationToken);
     }
 
+    /// <inheritdoc />
     public async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
     {
         return await dbContext.Set<TEntity>()
@@ -29,6 +33,7 @@ public class GenericRepository<TEntity, TKey>(AppDbContext dbContext)
             .ToListAsync(cancellationToken);
     }
 
+    /// <inheritdoc />
     public async Task DeleteAsync(TKey id, CancellationToken cancellationToken = default)
     {
         var entity = await GetByIdAsync(id, cancellationToken);

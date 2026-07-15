@@ -9,6 +9,13 @@ namespace Data;
 
 public static class DependencyInjection
 {
+    /// <summary>
+    /// Регистрирует необходимые зависимости для работы базы данных
+    /// </summary>
+    /// <param name="services">Коллекция сервисов</param>
+    /// <param name="configuration">Конфигурация проекта</param>
+    /// <returns>Коллекция сервисов</returns>
+    /// <exception cref="InvalidOperationException">Строка подключения к базе данных не была указана в конфигурации</exception>
     public static IServiceCollection AddData(this IServiceCollection services, IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("DefaultConnection");
