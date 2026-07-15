@@ -1,4 +1,5 @@
 using Domain.Entities;
+using Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data;
@@ -6,7 +7,7 @@ namespace Data;
 /// <summary>
 /// Контекст базы данных приложения
 /// </summary>
-public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
+public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options), IUnitOfWork
 {
     public DbSet<Employee> Employees => Set<Employee>();
     
