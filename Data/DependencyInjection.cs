@@ -1,3 +1,5 @@
+using Domain.Entities;
+using Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,6 +26,11 @@ public static class DependencyInjection
             options.UseNpgsql(connectionString)
                 .UseSnakeCaseNamingConvention();
         });
+
+        services.AddScoped<IUnitOfWork>(provider 
+            => provider.GetRequiredService<AppDbContext>());
+        
+        services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
         
         return services;
     }
