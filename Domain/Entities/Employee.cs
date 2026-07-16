@@ -13,19 +13,9 @@ public class Employee
     public Guid Id { get; set; }
     
     /// <summary>
-    /// Фамилия
+    /// Имя сотрудника
     /// </summary>
-    public string FirstName { get; set; } = string.Empty;
-    
-    /// <summary>
-    /// Имя
-    /// </summary>
-    public string LastName { get; set; } = string.Empty;
-    
-    /// <summary>
-    /// Отчество если есть
-    /// </summary>
-    public string? Surname { get; set; }
+    public string Name { get; set; } = string.Empty;
     
     /// <summary>
     /// Идентификатор учетной записи (null, если у сотрудника нет доступа в систему).
