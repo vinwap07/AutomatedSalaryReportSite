@@ -10,18 +10,18 @@ public interface IUserService
     /// <summary>
     /// Создает нового пользователя в системе
     /// </summary>
-    /// <param name="user">Данные о пользователе</param>
+    /// <param name="request">Данные о пользователе</param>
     /// <param name="cancellationToken">Токен отмены операции</param>
     /// <returns>Созданный пользователь</returns>
-    Task<UserDetailsDto> CreateAsync(CreateUserRequest user, CancellationToken cancellationToken = default);
+    Task<UserDetailsDto> CreateAsync(CreateUserRequest request, CancellationToken cancellationToken = default);
     
     /// <summary>
     /// Обновляет существующего пользователя в системе
     /// </summary>
-    /// <param name="user">Обновленные данные о пользователе</param>
+    /// <param name="request">Обновленные данные о пользователе</param>
     /// <param name="cancellationToken">Токен отмены операции</param>
     /// <returns>Обновленный пользователь</returns>
-    Task<UserDetailsDto> UpdateAsync(UpdateUserRequest user, CancellationToken cancellationToken = default);
+    Task<UserDetailsDto> UpdateAsync(UpdateUserRequest request, CancellationToken cancellationToken = default);
     
     /// <summary>
     /// Удаляет пользователя из системы по уникальному идентификатору

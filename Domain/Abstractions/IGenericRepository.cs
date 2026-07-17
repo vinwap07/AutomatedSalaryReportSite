@@ -31,6 +31,14 @@ public interface IGenericRepository<TEntity, in TKey> where TEntity : class
     /// <param name="cancellationToken">Токен отмены операции</param>
     /// <returns>Коллекция найденных сущностей</returns>
     Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Создает новую сущность
+    /// </summary>
+    /// <param name="entity">Создаваемая сущность</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
+    /// <returns>Созданная сущность</returns>
+    Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default);
     
     /// <summary>
     /// Удаляет сущность по ее первичному ключу

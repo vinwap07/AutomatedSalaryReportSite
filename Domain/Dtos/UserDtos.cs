@@ -1,22 +1,30 @@
-using Domain.Entities;
+using Domain.Entities; 
 
 namespace Domain.Dtos;
 
-public record UserDetailsDto(
-    Guid Id,
-    string Login);
+public record UserDetailsDto
+{
+    public Guid Id { get; init; }
+    public string Login { get; init; } = string.Empty;
+}
 
-public record UserListItemDto(
-    Guid Id,
-    string Login);
+public record UserListItemDto
+{
+    public Guid Id { get; init; }
+    public string Login { get; init; } = string.Empty;
+}
 
-public record CreateUserRequest(
-    string Login,
-    string Password,
-    Role Role);
+public record CreateUserRequest
+{
+    public string Login { get; init; } = string.Empty;
+    public string Password { get; init; } = string.Empty;
+    public Role Role { get; init; }
+}
 
-public record UpdateUserRequest(
-    Guid Id,
-    string Login,
-    string Password,
-    Role Role);
+public record UpdateUserRequest
+{
+    public Guid Id { get; init; }
+    public string? Login { get; init; } = string.Empty;
+    public string? Password { get; init; } = string.Empty;
+    public Role? Role { get; init; }
+}

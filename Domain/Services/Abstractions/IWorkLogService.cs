@@ -10,18 +10,18 @@ public interface IWorkLogService
     /// <summary>
     /// Создает новый отчет о выполненной работе в системе
     /// </summary>
-    /// <param name="workLog">Данные о выполненной работе</param>
+    /// <param name="request">Данные о выполненной работе</param>
     /// <param name="cancellationToken">Токен отмены операции</param>
     /// <returns>Созданный отчет</returns>
-    Task<WorkLogDetailsDto> CreateAsync(CreateWorkLogRequest workLog, CancellationToken cancellationToken = default);
+    Task<WorkLogDetailsDto> CreateAsync(CreateWorkLogRequest request, CancellationToken cancellationToken = default);
     
     /// <summary>
     /// Обновляет существующий отчет о выполненной работе в системе
     /// </summary>
-    /// <param name="workLog">Обновленная информация о выполненной работе</param>
+    /// <param name="request">Обновленная информация о выполненной работе</param>
     /// <param name="cancellationToken">Токен отмены операции</param>
     /// <returns>Обновленный отчет</returns>
-    Task<WorkLogDetailsDto> UpdateAsync(UpdateWorkLogRequest workLog, CancellationToken cancellationToken = default);
+    Task<WorkLogDetailsDto> UpdateAsync(UpdateWorkLogRequest request, CancellationToken cancellationToken = default);
     
     /// <summary>
     /// Удаляет отчет из системы по уникальному идентификатору

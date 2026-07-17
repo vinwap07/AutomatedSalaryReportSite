@@ -11,18 +11,18 @@ public interface IEmployeeService
     /// <summary>
     /// Создает нового сотрудника в системе
     /// </summary>
-    /// <param name="employee">Данные о создаваемом сотруднике</param>
+    /// <param name="request">Данные о создаваемом сотруднике</param>
     /// <param name="cancellationToken">Токен отмены операции</param>
     /// <returns>Созданный сотрудник</returns>
-    Task<EmployeeDetailsDto> CreateAsync(CreateEmployeeRequest employee, CancellationToken cancellationToken = default);
+    Task<EmployeeDetailsDto> CreateAsync(CreateEmployeeRequest request, CancellationToken cancellationToken = default);
     
     /// <summary>
     /// Обновляет существующего сотрудника в системе
     /// </summary>
-    /// <param name="employee">Обновленные данные о сотруднике</param>
+    /// <param name="request">Обновленные данные о сотруднике</param>
     /// <param name="cancellationToken">Токен отмены операции</param>
     /// <returns>Обновленный сотрудник</returns>
-    Task<EmployeeDetailsDto> UpdateAsync(UpdateEmployeeRequest employee, CancellationToken cancellationToken = default);
+    Task<EmployeeDetailsDto> UpdateAsync(UpdateEmployeeRequest request, CancellationToken cancellationToken = default);
     
     /// <summary>
     /// Удаляет сотрудника из системы

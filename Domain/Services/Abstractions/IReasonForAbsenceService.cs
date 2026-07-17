@@ -12,18 +12,18 @@ public interface IReasonForAbsenceService
     /// <summary>
     /// Создает новую причину отсутствия в системе
     /// </summary>
-    /// <param name="reason">Данные о причине отсутствия</param>
+    /// <param name="request">Данные о причине отсутствия</param>
     /// <param name="cancellationToken">Токен отмены операции</param>
     /// <returns>Созданная причина отсутствия</returns>
-    Task<ReasonForAbsence> CreateAsync(CreateReasonForAbsenceRequest reason, CancellationToken cancellationToken = default);
+    Task<ReasonForAbsence> CreateAsync(CreateReasonForAbsenceRequest request, CancellationToken cancellationToken = default);
     
     /// <summary>
     /// Обновляет существующую причину отсутствия в системе
     /// </summary>
-    /// <param name="reason">Обновленные данные о причине отсутствия</param>
+    /// <param name="request">Обновленные данные о причине отсутствия</param>
     /// <param name="cancellationToken">Токен отмены операции</param>
     /// <returns>Обновленная причина отсутствия</returns>
-    Task<ReasonForAbsence> UpdateAsync(UpdateReasonForAbsenceRequest reason, CancellationToken cancellationToken = default);
+    Task<ReasonForAbsence> UpdateAsync(UpdateReasonForAbsenceRequest request, CancellationToken cancellationToken = default);
     
     /// <summary>
     /// Удаляет причину отсутствия в системе по уникальному идентификатору

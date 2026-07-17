@@ -32,6 +32,13 @@ public class GenericRepository<TEntity, TKey>(AppDbContext dbContext)
             .Where(predicate)
             .ToListAsync(cancellationToken);
     }
+    
+    /// <inheritdoc />
+    public async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
+    {
+        await dbContext.Set<TEntity>().AddAsync(entity, cancellationToken);
+        return entity;
+    }
 
     /// <inheritdoc />
     public async Task DeleteAsync(TKey id, CancellationToken cancellationToken = default)

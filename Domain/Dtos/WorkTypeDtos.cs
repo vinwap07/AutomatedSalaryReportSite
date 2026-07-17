@@ -5,4 +5,4 @@ public record CreateWorkTypeRequest(
 
 public record UpdateWorkTypeRequest(
     Guid Id,
-    string Name);
+    string? Name);

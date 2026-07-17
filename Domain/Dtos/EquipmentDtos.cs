@@ -1,10 +1,14 @@
 namespace Domain.Dtos;
 
-public record CreateEquipmentRequest(
-    string Name,
-    bool HasTracker);
+public record CreateEquipmentRequest
+{
+    public string Name { get; init; }
+    public bool HasTracker { get; init; }
+}
 
-public record UpdateEquipmentRequest(
-    Guid Id,
-    string? Name,
-    bool? HasTracker);
+public record UpdateEquipmentRequest
+{
+    public Guid Id { get; init; }
+    public string? Name { get; init; }
+    public bool? HasTracker { get; init; }
+}

@@ -5,4 +5,4 @@ public record CreateReasonForAbsenceRequest(
 
 public record UpdateReasonForAbsenceRequest(
     Guid Id,
-    string Name);
+    string? Name);

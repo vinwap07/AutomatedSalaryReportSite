@@ -3,37 +3,45 @@ using Domain.ValueObjects;
 
 namespace Domain.Dtos;
 
-public record WorkLogDetailsDto(
-    Guid Id,
-    EmployeeDetailsDto Employee,
-    WorkType? WorkType,
-    DateOnly Date,
-    int? WorkHours,
-    WorkCost? WorkCost,
-    ReasonForAbsence? ReasonForAbsence);
+public record WorkLogDetailsDto
+{
+    public Guid Id { get; init; }
+    public EmployeeDetailsDto Employee { get; init; }
+    public WorkType? WorkType { get; init; }
+    public DateOnly Date { get; init; }
+    public int? WorkHours { get; init; }
+    public WorkCost? WorkCost { get; init; }
+    public ReasonForAbsence? ReasonForAbsence { get; init; }
+}
 
-public record WorkLogListItemDto(
-    Guid Id,
-    EmployeeDetailsDto Employee,
-    WorkType? WorkType,
-    DateOnly Date,
-    int? WorkHours,
-    WorkCost? WorkCost,
-    ReasonForAbsence? ReasonForAbsence);
+public record WorkLogListItemDto
+{
+    public Guid Id { get; init; }
+    public EmployeeListItemDto Employee { get; init; } = null!; 
+    public WorkType? WorkType { get; init; }
+    public DateOnly Date { get; init; }
+    public int? WorkHours { get; init; }
+    public WorkCost? WorkCost { get; init; }
+    public ReasonForAbsence? ReasonForAbsence { get; init; }
+}
 
-public record CreateWorkLogRequest(
-    Guid EmployeeId,
-    DateOnly Date,
-    Guid? WorkTypeId,
-    int? WorkHours,
-    WorkCost? WorkCost,
-    Guid? ReasonForAbsenceId);
+public record CreateWorkLogRequest
+{
+    public Guid EmployeeId { get; init; }
+    public DateOnly Date { get; init; }
+    public Guid? WorkTypeId { get; init; }
+    public int? WorkHours { get; init; }
+    public WorkCost? WorkCost { get; init; }
+    public Guid? ReasonForAbsenceId { get; init; }
+}
 
-public record UpdateWorkLogRequest(
-    Guid Id,
-    Guid EmployeeId,
-    DateOnly Date,
-    Guid? WorkTypeId,
-    int? WorkHours,
-    WorkCost? WorkCost,
-    Guid? ReasonForAbsenceId);
+public record UpdateWorkLogRequest
+{
+    public Guid Id { get; init; }
+    public Guid? EmployeeId { get; init; }
+    public DateOnly? Date { get; init; }
+    public Guid? WorkTypeId { get; init; }
+    public int? WorkHours { get; init; }
+    public WorkCost? WorkCost { get; init; }
+    public Guid? ReasonForAbsenceId { get; init; }
+}

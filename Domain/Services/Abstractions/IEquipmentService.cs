@@ -11,18 +11,18 @@ public interface IEquipmentService
     /// <summary>
     /// Создает технику в системе
     /// </summary>
-    /// <param name="equipment">Данные о создаваемой техники</param>
+    /// <param name="request">Данные о создаваемой техники</param>
     /// <param name="cancellationToken">Токен отмены операции</param>
     /// <returns>Созданная техника</returns>
-    Task<Equipment> CreateAsync(CreateEquipmentRequest equipment, CancellationToken cancellationToken = default);
+    Task<Equipment> CreateAsync(CreateEquipmentRequest request, CancellationToken cancellationToken = default);
     
     /// <summary>
     /// Обновляет существующую технику в системе 
     /// </summary>
-    /// <param name="equipment">Обновленные данные о технике</param>
+    /// <param name="request">Обновленные данные о технике</param>
     /// <param name="cancellationToken">Токен отмены операции</param>
     /// <returns>Обновленная техника</returns>
-    Task<Equipment> UpdateAsync(UpdateEquipmentRequest equipment, CancellationToken cancellationToken = default);
+    Task<Equipment> UpdateAsync(UpdateEquipmentRequest request, CancellationToken cancellationToken = default);
     
     /// <summary>
     /// Удаляет технику из системы

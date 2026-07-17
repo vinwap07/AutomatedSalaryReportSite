@@ -11,18 +11,18 @@ public interface IWorkTypeService
     /// <summary>
     /// Создает новый тип работы в системе
     /// </summary>
-    /// <param name="workType">Данные о типе работы</param>
+    /// <param name="request">Данные о типе работы</param>
     /// <param name="cancellationToken">Токен отмены операции</param>
     /// <returns>Созданный тип работы</returns>
-    Task<WorkType> CreateAsync(CreateWorkTypeRequest workType, CancellationToken cancellationToken = default);
+    Task<WorkType> CreateAsync(CreateWorkTypeRequest request, CancellationToken cancellationToken = default);
     
     /// <summary>
     /// Обновляет существующий тип работы в системе
     /// </summary>
-    /// <param name="workType">Обновленные данные о типе работы</param>
+    /// <param name="request">Обновленные данные о типе работы</param>
     /// <param name="cancellationToken">Токен отмены операции</param>
     /// <returns>Обновленный тип работы</returns>
-    Task<WorkType> UpdateAsync(UpdateWorkTypeRequest workType, CancellationToken cancellationToken = default);
+    Task<WorkType> UpdateAsync(UpdateWorkTypeRequest request, CancellationToken cancellationToken = default);
     
     /// <summary>
     /// Удаляет типа работы в системе по уникальному идентификатору
