@@ -3,12 +3,55 @@ using Domain.Entities;
 
 namespace Domain.Services.Abstractions;
 
+/// <summary>
+/// Сервис для работы с типами работ
+/// </summary>
 public interface IWorkTypeService
 {
-    Task<WorkType> GetWorkTypeByIdAsync(Guid id, CancellationToken cancellationToken = default);
-    Task<IEnumerable<WorkType>> GetAllWorkTypesAsync(CancellationToken cancellationToken = default);
-    Task<WorkType> CreateWorkTypeAsync(CreateWorkTypeDto dto, CancellationToken cancellationToken = default);
-    Task<WorkType> UpdateWorkTypeAsync(Guid id, UpdateWorkTypeDto dto, CancellationToken cancellationToken = default);
-    Task DeleteWorkTypeAsync(Guid id, CancellationToken cancellationToken = default);
-    Task GetWorkTypeByFiltersAsync(WorkTypeFilters filters, CancellationToken cancellationToken = default);
+    /// <summary>
+    /// Создает новый тип работы в системе
+    /// </summary>
+    /// <param name="workType">Данные о типе работы</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
+    /// <returns>Созданный тип работы</returns>
+    Task<WorkType> CreateAsync(CreateWorkTypeRequest workType, CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Обновляет существующий тип работы в системе
+    /// </summary>
+    /// <param name="workType">Обновленные данные о типе работы</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
+    /// <returns>Обновленный тип работы</returns>
+    Task<WorkType> UpdateAsync(UpdateWorkTypeRequest workType, CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Удаляет типа работы в системе по уникальному идентификатору
+    /// </summary>
+    /// <param name="id">Уникальный идентификатор удаляемого типа работы</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
+    /// <returns>Асинхронная операция</returns>
+    Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Получает тип работы из системы по его уникальному идентификатору
+    /// </summary>
+    /// <param name="id">Уникальный идентификатор типа работы</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
+    /// <returns>Найденный тип работы</returns>
+    Task<WorkType> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Получает все типы работ из системы
+    /// </summary>
+    /// <param name="cancellationToken">Токен отмены операции</param>
+    /// <returns>Коллекция всех типов работ из системы</returns>
+    Task<IEnumerable<WorkType>> GetAllAsync(CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Получает все типы работ из системы, которые соответствуют фильтрам
+    /// </summary>
+    /// <param name="filters">Фильтры</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
+    /// <returns>Коллекция всех типов работ из системы, которые соответствуют фильтрам</returns>
+    Task GetByFiltersAsync(WorkTypeFilters filters, CancellationToken cancellationToken = default);
 }

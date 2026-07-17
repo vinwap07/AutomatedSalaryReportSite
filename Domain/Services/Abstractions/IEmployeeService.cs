@@ -3,12 +3,55 @@ using Domain.Entities;
 
 namespace Domain.Services.Abstractions;
 
+/// <summary>
+/// Сервис для работы с сотрудниками
+/// </summary>
 public interface IEmployeeService
 {
-    Task<EmployeeDetailsDto> GetEmployeeDetailsAsync(Guid id, CancellationToken cancellationToken = default);
-    Task<IEnumerable<EmployeeListItemDto>> GetEmployeesAsync(CancellationToken cancellationToken = default);
-    Task<IEnumerable<EmployeeListItemDto>> GetEmployeesWithFiltersAsync(EmployeeFilters filters, CancellationToken cancellationToken = default);
-    Task<EmployeeDetailsDto> CreateEmployeeAsync(CreateEmployeeRequest employee, CancellationToken cancellationToken = default);
-    Task<EmployeeDetailsDto> UpdateEmployeeAsync(UpdateEmployeeRequest employee, CancellationToken cancellationToken = default);
-    Task DeleteEmployeeAsync(Guid id, CancellationToken cancellationToken = default);
+    /// <summary>
+    /// Создает нового сотрудника в системе
+    /// </summary>
+    /// <param name="employee">Данные о создаваемом сотруднике</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
+    /// <returns>Созданный сотрудник</returns>
+    Task<EmployeeDetailsDto> CreateAsync(CreateEmployeeRequest employee, CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Обновляет существующего сотрудника в системе
+    /// </summary>
+    /// <param name="employee">Обновленные данные о сотруднике</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
+    /// <returns>Обновленный сотрудник</returns>
+    Task<EmployeeDetailsDto> UpdateAsync(UpdateEmployeeRequest employee, CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Удаляет сотрудника из системы
+    /// </summary>
+    /// <param name="id">Уникальный идентификатор удаляемого сотрудника</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
+    /// <returns>Асинхронная операция</returns>
+    Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Получает сотрудника по его уникальному идентификатору
+    /// </summary>
+    /// <param name="id">Уникальный идентификатор сотрудника</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
+    /// <returns>Найденный сотрудник</returns>
+    Task<EmployeeDetailsDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Получает всех сотрудников из системы
+    /// </summary>
+    /// <param name="cancellationToken">Токен отмены операции</param>
+    /// <returns>Коллекция существующих сотрудников</returns>
+    Task<IEnumerable<EmployeeListItemDto>> GetAllAsync(CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Получает всех сотрудников из системы, которые соответствуют фильтрам
+    /// </summary>
+    /// <param name="filters">Фильтры</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
+    /// <returns>Коллекция сотрудников, соответствующих фильтрам</returns>
+    Task<IEnumerable<EmployeeListItemDto>> GetByFiltersAsync(EmployeeFilters filters, CancellationToken cancellationToken = default);
 }
