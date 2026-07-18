@@ -7,11 +7,13 @@ using Domain.Services.Abstractions;
 
 namespace Domain.Services.Implementations;
 
+/// <inheritdoc />
 public class WorkLogService(
     IGenericRepository<WorkLog, Guid> workLogRepository,
     IUnitOfWork unitOfWork
     ) : IWorkLogService
 {
+    /// <inheritdoc />
     public async Task<WorkLogDetailsDto> CreateAsync(CreateWorkLogRequest request, CancellationToken cancellationToken = default)
     {
         var workLog = request.ToWorkLog();
@@ -21,6 +23,7 @@ public class WorkLogService(
         return workLog.ToDetailsDto();
     }
 
+    /// <inheritdoc />
     public async Task<WorkLogDetailsDto> UpdateAsync(UpdateWorkLogRequest request, CancellationToken cancellationToken = default)
     {
         var workLog = await workLogRepository.GetByIdAsync(request.Id, cancellationToken);
@@ -33,12 +36,14 @@ public class WorkLogService(
         return workLog.ToDetailsDto();
     }
 
+    /// <inheritdoc />
     public async Task DeleteAsync(Guid workLogId, CancellationToken cancellationToken = default)
     {
         await workLogRepository.DeleteAsync(workLogId, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
+    /// <inheritdoc />
     public async Task<WorkLogDetailsDto> GetByIdAsync(Guid workLogId, CancellationToken cancellationToken = default)
     {
         var workLog = await workLogRepository.GetByIdAsync(workLogId, cancellationToken);
@@ -49,12 +54,14 @@ public class WorkLogService(
         return workLog.ToDetailsDto();
     }
 
+    /// <inheritdoc />
     public async Task<IEnumerable<WorkLogListItemDto>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         var workLogs = await workLogRepository.GetAllAsync(cancellationToken);
         return workLogs.Select(x => x.ToListItemDto());
     }
 
+    /// <inheritdoc />
     public async Task<IEnumerable<WorkLogListItemDto>> GetByFiltersAsync(WorkLogFilters filters, CancellationToken cancellationToken = default)
     {
         var workLogs = await workLogRepository.FindAsync(w => 

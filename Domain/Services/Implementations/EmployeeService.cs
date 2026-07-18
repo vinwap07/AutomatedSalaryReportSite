@@ -7,11 +7,13 @@ using Domain.Services.Abstractions;
 
 namespace Domain.Services.Implementations;
 
+/// <inheritdoc />
 public class EmployeeService(
     IGenericRepository<Employee, Guid> employeeRepository,
     IUnitOfWork unitOfWork
     ) : IEmployeeService
 {
+    /// <inheritdoc />
     public async Task<EmployeeDetailsDto> CreateAsync(CreateEmployeeRequest request, CancellationToken cancellationToken = default)
     {
         var employee = request.ToEmployee();
@@ -21,6 +23,7 @@ public class EmployeeService(
         return employee.ToDetailsDto();
     }
 
+    /// <inheritdoc />
     public async Task<EmployeeDetailsDto> UpdateAsync(UpdateEmployeeRequest request, CancellationToken cancellationToken = default)
     {
         var employee = await employeeRepository.GetByIdAsync(request.Id, cancellationToken);
@@ -33,12 +36,14 @@ public class EmployeeService(
         return employee.ToDetailsDto();
     }
 
+    /// <inheritdoc />
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         await employeeRepository.DeleteAsync(id, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
-
+    
+    /// <inheritdoc />
     public async Task<EmployeeDetailsDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var employee = await employeeRepository.GetByIdAsync(id, cancellationToken);
@@ -49,12 +54,14 @@ public class EmployeeService(
         return employee.ToDetailsDto();
     }
 
+    /// <inheritdoc />
     public async Task<IEnumerable<EmployeeListItemDto>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         var employees = await employeeRepository.GetAllAsync(cancellationToken);
         return employees.Select(e => e.ToListItemDto());
     }
-
+    
+    /// <inheritdoc />
     public async Task<IEnumerable<EmployeeListItemDto>> GetByFiltersAsync(EmployeeFilters filters, CancellationToken cancellationToken = default)
     {
         var employees = await employeeRepository.FindAsync(e => 

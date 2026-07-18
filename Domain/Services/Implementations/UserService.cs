@@ -8,12 +8,14 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Domain.Services.Implementations;
 
+/// <inheritdoc />
 public class UserService(
     IPasswordHasher<User> passwordHasher,
     IGenericRepository<User, Guid> userRepository,
     IUnitOfWork unitOfWork
     ): IUserService
 {
+    /// <inheritdoc />
     public async Task<UserDetailsDto> CreateAsync(CreateUserRequest request, CancellationToken cancellationToken = default)
     {
         var user = request.ToUser();
@@ -24,7 +26,8 @@ public class UserService(
         
         return user.ToDetailsDto();
     }
-
+    
+    /// <inheritdoc />
     public async Task<UserDetailsDto> UpdateAsync(UpdateUserRequest request, CancellationToken cancellationToken = default)
     {
         var user = await userRepository.GetByIdAsync(request.Id, cancellationToken);
@@ -43,12 +46,14 @@ public class UserService(
         return user.ToDetailsDto();
     }
 
+    /// <inheritdoc />
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         await userRepository.DeleteAsync(id, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
+    /// <inheritdoc />
     public async Task<UserDetailsDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var user = await userRepository.GetByIdAsync(id, cancellationToken);
@@ -60,12 +65,14 @@ public class UserService(
         return user.ToDetailsDto();
     }
 
+    /// <inheritdoc />
     public async Task<IEnumerable<UserListItemDto>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         var users = await userRepository.GetAllAsync(cancellationToken);
         return users.Select(u => u.ToListItemDto());
     }
 
+    /// <inheritdoc />
     public async Task<IEnumerable<UserListItemDto>> GetByFiltersIdAsync(UserFilters filters, CancellationToken cancellationToken = default)
     {
         var users = await userRepository.FindAsync(u => 

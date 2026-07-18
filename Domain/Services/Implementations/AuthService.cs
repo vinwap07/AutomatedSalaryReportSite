@@ -6,11 +6,13 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Domain.Services.Implementations;
 
+/// <inheritdoc />
 public class AuthService(
     IPasswordHasher<User> passwordHasher,
     IGenericRepository<User, Guid> userRepository
     ) : IAuthService
 {
+    /// <inheritdoc />
     public async Task LoginAsync(string username, string password, CancellationToken cancellationToken = default)
     {
         var users = (await userRepository.FindAsync(user => user.Login == username, 1, 1, cancellationToken))

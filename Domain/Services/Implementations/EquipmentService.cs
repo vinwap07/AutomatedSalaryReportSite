@@ -7,11 +7,13 @@ using Domain.Services.Abstractions;
 
 namespace Domain.Services.Implementations;
 
+/// <inheritdoc />
 public class EquipmentService(
     IGenericRepository<Equipment, Guid> equipmentRepository,
     IUnitOfWork unitOfWork
     ) : IEquipmentService
 {
+    /// <inheritdoc />
     public async Task<Equipment> CreateAsync(CreateEquipmentRequest request, CancellationToken cancellationToken = default)
     {
         var equipment = request.ToEquipment();
@@ -21,6 +23,7 @@ public class EquipmentService(
         return equipment;
     }
 
+    /// <inheritdoc />
     public async Task<Equipment> UpdateAsync(UpdateEquipmentRequest request, CancellationToken cancellationToken = default)
     {
         var equipment = await equipmentRepository.GetByIdAsync(request.Id, cancellationToken);
@@ -33,12 +36,14 @@ public class EquipmentService(
         return equipment;
     }
 
+    /// <inheritdoc />
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         await equipmentRepository.DeleteAsync(id, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
+    /// <inheritdoc />
     public async Task<Equipment> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var equipment = await equipmentRepository.GetByIdAsync(id, cancellationToken);
@@ -49,11 +54,13 @@ public class EquipmentService(
         return equipment;
     }
 
+    /// <inheritdoc />
     public Task<IEnumerable<Equipment>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return equipmentRepository.GetAllAsync(cancellationToken);
     }
 
+    /// <inheritdoc />
     public Task<IEnumerable<Equipment>> GetByFiltersAsync(EquipmentFilters filters, CancellationToken cancellationToken = default)
     {
         return equipmentRepository.FindAsync(e => 

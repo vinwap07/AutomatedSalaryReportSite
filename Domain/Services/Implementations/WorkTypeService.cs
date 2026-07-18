@@ -7,11 +7,13 @@ using Domain.Services.Abstractions;
 
 namespace Domain.Services.Implementations;
 
+/// <inheritdoc />
 public class WorkTypeService(
     IGenericRepository<WorkType, Guid> workTypeRepository,
     IUnitOfWork unitOfWork
     ) : IWorkTypeService
 {
+    /// <inheritdoc />
     public async Task<WorkType> CreateAsync(CreateWorkTypeRequest request, CancellationToken cancellationToken = default)
     {
         var workType = request.ToWorkType();
@@ -21,6 +23,7 @@ public class WorkTypeService(
         return workType;
     }
 
+    /// <inheritdoc />
     public async Task<WorkType> UpdateAsync(UpdateWorkTypeRequest request, CancellationToken cancellationToken = default)
     {
         var workType = await workTypeRepository.GetByIdAsync(request.Id, cancellationToken);
@@ -33,12 +36,14 @@ public class WorkTypeService(
         return workType;
     }
 
+    /// <inheritdoc />
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         await workTypeRepository.DeleteAsync(id, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
+    /// <inheritdoc />
     public async Task<WorkType> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var workType = await workTypeRepository.GetByIdAsync(id, cancellationToken);
@@ -49,11 +54,13 @@ public class WorkTypeService(
         return workType;
     }
 
+    /// <inheritdoc />
     public Task<IEnumerable<WorkType>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return workTypeRepository.GetAllAsync(cancellationToken);
     }
 
+    /// <inheritdoc />
     public Task<IEnumerable<WorkType>> GetByFiltersAsync(WorkTypeFilters filters, CancellationToken cancellationToken = default)
     {
         return workTypeRepository.FindAsync(w =>
@@ -61,5 +68,6 @@ public class WorkTypeService(
             filters.Page,
             filters.PageSize,
             cancellationToken);
+        
     }
 }
