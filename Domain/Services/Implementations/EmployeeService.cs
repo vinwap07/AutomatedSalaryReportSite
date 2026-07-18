@@ -60,11 +60,12 @@ public class EmployeeService(
         var employees = await employeeRepository.GetAllAsync(cancellationToken);
         return employees.Select(e => e.ToListItemDto());
     }
-    
+
     /// <inheritdoc />
-    public async Task<IEnumerable<EmployeeListItemDto>> GetByFiltersAsync(EmployeeFilters filters, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<EmployeeListItemDto>> GetByFiltersAsync(EmployeeFilters filters,
+        CancellationToken cancellationToken = default)
     {
-        var employees = await employeeRepository.FindAsync(e => 
+        var employees = await employeeRepository.FindAsync(e =>
                 (filters.Name == null || e.Name.Contains(filters.Name)) &&
                 (filters.Specialty == null || e.Specialty == filters.Specialty) &&
                 (filters.EquipmentId == null || e.EquipmentId == filters.EquipmentId),

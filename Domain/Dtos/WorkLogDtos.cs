@@ -27,21 +27,21 @@ public record WorkLogListItemDto
 
 public record CreateWorkLogRequest
 {
-    public Guid EmployeeId { get; init; }
-    public DateOnly Date { get; init; }
-    public Guid? WorkTypeId { get; init; }
-    public int? WorkHours { get; init; }
-    public WorkCost? WorkCost { get; init; }
-    public Guid? ReasonForAbsenceId { get; init; }
+    public Guid EmployeeId { get; set; }
+    public DateOnly Date { get; set; }
+    public Guid? WorkTypeId { get; set; }
+    public int? WorkHours { get; set; }
+    public WorkCost? WorkCost { get; set; }
+    public Guid? ReasonForAbsenceId { get; set; }
 }
 
 public record UpdateWorkLogRequest
 {
-    public Guid Id { get; init; }
-    public Guid? EmployeeId { get; init; }
-    public DateOnly? Date { get; init; }
-    public Guid? WorkTypeId { get; init; }
-    public int? WorkHours { get; init; }
-    public WorkCost? WorkCost { get; init; }
-    public Guid? ReasonForAbsenceId { get; init; }
+    public Guid Id { get; set; }
+    public Guid? EmployeeId { get; set; }
+    public DateOnly? Date { get; set; }
+    public Guid? WorkTypeId { get; set; }
+    public int? WorkHours { get; set; }
+    public WorkCost? WorkCost { get; set; }
+    public Guid? ReasonForAbsenceId { get; set; }
 }

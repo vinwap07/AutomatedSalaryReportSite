@@ -1,0 +1,69 @@
+@page
+@model WebApp.Pages.Employees.IndexModel
+@{
+    ViewData["Title"] = "Сотрудники";
+}
+
+<h1>Список сотрудников</h1>
+
+<form method="get" class="row g-3 mb-4">
+    <!-- Скрытые поля для пагинации -->
+    <input type="hidden" asp-for="Filters.Page" value="1" /> 
+    <input type="hidden" asp-for="Filters.PageSize" />
+
+    <div class="col-md-3">
+        <label class="form-label">Имя</label>
+        <input type="text" class="form-control" asp-for="Filters.Name" placeholder="Поиск...">
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Специальность</label>
+        <!-- Если Specialty это enum, Razor сам подставит значения, если обычный класс/строка - будет инпут -->
+        <input type="text" class="form-control" asp-for="Filters.Specialty">
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">ID Оборудования</label>
+        <input type="text" class="form-control" asp-for="Filters.EquipmentId">
+    </div>
+    <div class="col-md-3 align-self-end">
+        <button type="submit" class="btn btn-primary">Найти</button>
+        <a asp-page="./Index" class="btn btn-secondary">Сбросить</a>
+    </div>
+</form>
+
+<table class="table">
+    <!-- Тот же вывод таблицы, что и в прошлый раз -->
+    <tbody>
+        @foreach (var emp in Model.Employees)
+        {
+            <tr>
+                <td>@emp.Name</td>
+                <td>@emp.Specialty</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Блок пагинации -->
+<div class="d-flex justify-content-between mt-3">
+    <!-- Кнопка Назад (активна, если страница больше 1) -->
+    <a asp-page="./Index" 
+       asp-route-Filters.Name="@Model.Filters.Name"
+       asp-route-Filters.Specialty="@Model.Filters.Specialty"
+       asp-route-Filters.EquipmentId="@Model.Filters.EquipmentId"
+       asp-route-Filters.Page="@(Model.Filters.Page - 1)"
+       class="btn btn-outline-primary @(Model.Filters.Page <= 1 ? "disabled" : "")">
+        ← Назад
+    </a>
+
+    <span>Страница @Model.Filters.Page</span>
+
+    <!-- Кнопка Вперед -->
+    <a asp-page="./Index" 
+       asp-route-Filters.Name="@Model.Filters.Name"
+       asp-route-Filters.Specialty="@Model.Filters.Specialty"
+       asp-route-Filters.EquipmentId="@Model.Filters.EquipmentId"
+       asp-route-Filters.Page="@(Model.Filters.Page + 1)"
+       class="btn btn-outline-primary @(!Model.Employees.Any() ? "disabled" : "")">
+        Вперед →
+    </a>
+</div>

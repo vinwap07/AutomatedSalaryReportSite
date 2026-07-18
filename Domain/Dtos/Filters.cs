@@ -2,37 +2,46 @@ using Domain.Entities;
 
 namespace Domain.Dtos;
 
-public record Filters(
-    int Page = 1,
-    int PageSize = 50);
+public record Filters
+{
+    public int Page { get; set; } = 1;
+    public int PageSize { get; set; } = 50;
+}
 
-public record UserFilters(
-    string? Login,
-    Role? Role
-    ) : Filters;
+public record UserFilters : Filters
+{
+    public string? Login { get; set; }
+    public Role? Role { get; set; }
+}
 
-public record EmployeeFilters(
-    string? Name,
-    Specialty? Specialty, 
-    Guid? EquipmentId
-    ) : Filters;
+public record EmployeeFilters : Filters
+{
+    public string? Name { get; set; }
+    public Specialty? Specialty { get; set; }
+    public Guid? EquipmentId { get; set; }
+}
 
-public record WorkLogFilters(
-    Guid? EmployeeId,
-    DateOnly? From,
-    DateOnly? To,
-    bool? HasReasonForAbsence,
-    Guid? WorkTypeId
-    ) : Filters;    
-public record EquipmentFilters(
-    string? Name,
-    bool? HasTracker
-    ) : Filters; 
+public record WorkLogFilters : Filters
+{
+    public Guid? EmployeeId { get; set; }
+    public DateOnly? From { get; set; }
+    public DateOnly? To { get; set; }
+    public bool? HasReasonForAbsence { get; set; }
+    public Guid? WorkTypeId { get; set; }
+}
 
-public record WorkTypeFilters(
-    string? Name
-    ) : Filters;
+public record EquipmentFilters : Filters
+{
+    public string? Name { get; set; }
+    public bool? HasTracker { get; set; }
+}
 
-public record ReasonForAbsenceFilters(
-    string? Name
-    ) : Filters;
+public record WorkTypeFilters : Filters
+{
+    public string? Name { get; set; }
+}
+
+public record ReasonForAbsenceFilters : Filters
+{
+    public string? Name { get; set; }
+}
