@@ -16,4 +16,8 @@
       <_ContentIncludedByDefault Remove="Pages\Account\Login.cshtml" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Middlewares\" />
+    </ItemGroup>
+
 </Project>

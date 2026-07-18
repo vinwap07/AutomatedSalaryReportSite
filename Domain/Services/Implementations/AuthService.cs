@@ -1,6 +1,7 @@
 using Domain.Dtos;
 using Domain.Entities;
 using Domain.Exceptions;
+using Domain.Mappers;
 using Domain.Repositories;
 using Domain.Services.Abstractions;
 using Microsoft.AspNetCore.Identity;
@@ -14,7 +15,7 @@ public class AuthService(
     ) : IAuthService
 {
     /// <inheritdoc />
-    public async Task LoginAsync(LoginDto loginData, CancellationToken cancellationToken = default)
+    public async Task<UserDetailsDto> LoginAsync(LoginData loginData, CancellationToken cancellationToken = default)
     {
         var users = (await userRepository.FindAsync(user => user.Login == loginData.Username, 1, 1, cancellationToken))
             .ToList();
@@ -29,5 +30,6 @@ public class AuthService(
         {
             throw new UnauthorizedException("Wrong username or password");
         }
+        return user.ToDetailsDto();
     }
 }

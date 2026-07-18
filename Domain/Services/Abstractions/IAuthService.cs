@@ -13,5 +13,5 @@ public interface IAuthService
     /// <param name="loginData">Юзернейм и пароль от пользователя</param>
     /// <param name="cancellationToken">Токен отмены операции</param>
     /// <returns>Асинхронная операция</returns>
-    Task LoginAsync(LoginDto loginData, CancellationToken cancellationToken = default);
+    Task<UserDetailsDto> LoginAsync(LoginData loginData, CancellationToken cancellationToken = default);
 }
