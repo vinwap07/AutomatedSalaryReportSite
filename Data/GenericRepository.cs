@@ -25,11 +25,13 @@ public class GenericRepository<TEntity, TKey>(AppDbContext dbContext)
     }
 
     /// <inheritdoc />
-    public async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate, int page, int pageSize, CancellationToken cancellationToken = default)
     {
         return await dbContext.Set<TEntity>()
             .AsNoTracking()
             .Where(predicate)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync(cancellationToken);
     }
     

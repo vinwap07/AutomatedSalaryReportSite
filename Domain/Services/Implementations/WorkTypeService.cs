@@ -54,8 +54,12 @@ public class WorkTypeService(
         return workTypeRepository.GetAllAsync(cancellationToken);
     }
 
-    public Task GetByFiltersAsync(WorkTypeFilters filters, CancellationToken cancellationToken = default)
+    public Task<IEnumerable<WorkType>> GetByFiltersAsync(WorkTypeFilters filters, CancellationToken cancellationToken = default)
     {
-        
+        return workTypeRepository.FindAsync(w =>
+                filters.Name == null || w.Name.Contains(filters.Name),
+            filters.Page,
+            filters.PageSize,
+            cancellationToken);
     }
 }

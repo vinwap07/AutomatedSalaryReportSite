@@ -4,10 +4,11 @@ namespace Domain.Dtos;
 
 public record Filters(
     int Page = 1,
-    int PageSize = 10);
+    int PageSize = 50);
 
 public record UserFilters(
-    string? Login
+    string? Login,
+    Role? Role
     ) : Filters;
 
 public record EmployeeFilters(

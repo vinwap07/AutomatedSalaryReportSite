@@ -54,8 +54,13 @@ public class EquipmentService(
         return equipmentRepository.GetAllAsync(cancellationToken);
     }
 
-    public Task<Equipment> GetByFiltersAsync(EquipmentFilters filters, CancellationToken cancellationToken = default)
+    public Task<IEnumerable<Equipment>> GetByFiltersAsync(EquipmentFilters filters, CancellationToken cancellationToken = default)
     {
-        
+        return equipmentRepository.FindAsync(e => 
+                (filters.Name == null || e.Name.Contains(filters.Name)) && 
+                (filters.HasTracker == null || e.HasTracker == filters.HasTracker), 
+            filters.Page, 
+            filters.PageSize, 
+            cancellationToken);
     }
 }

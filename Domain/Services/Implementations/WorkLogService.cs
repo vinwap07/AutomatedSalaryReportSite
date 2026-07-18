@@ -55,8 +55,17 @@ public class WorkLogService(
         return workLogs.Select(x => x.ToListItemDto());
     }
 
-    public Task<IEnumerable<WorkLogListItemDto>> GetByFiltersAsync(WorkLogFilters filters, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<WorkLogListItemDto>> GetByFiltersAsync(WorkLogFilters filters, CancellationToken cancellationToken = default)
     {
-        
+        var workLogs = await workLogRepository.FindAsync(w => 
+                (filters.EmployeeId == null || w.EmployeeId == filters.EmployeeId) &&
+                (filters.From == null || w.Date > filters.From) &&
+                (filters.To == null || w.Date < filters.To) &&
+                (filters.HasReasonForAbsence == null || ((w.ReasonForAbsence != null) == filters.HasReasonForAbsence)) &&
+                (filters.WorkTypeId == null || w.WorkTypeId == filters.WorkTypeId),
+            filters.Page,
+            filters.PageSize,
+            cancellationToken);
+        return workLogs.Select(x => x.ToListItemDto());
     }
 }

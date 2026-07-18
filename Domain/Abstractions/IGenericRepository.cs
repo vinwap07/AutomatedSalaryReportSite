@@ -28,9 +28,11 @@ public interface IGenericRepository<TEntity, in TKey> where TEntity : class
     /// Находит коллекцию сущностей, удовлетворяющих условию
     /// </summary>
     /// <param name="predicate">Условие</param>
+    /// <param name="page">Номер страницы</param>
+    /// <param name="pageSize">Количество записей на странице</param>>
     /// <param name="cancellationToken">Токен отмены операции</param>
     /// <returns>Коллекция найденных сущностей</returns>
-    Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
+    Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate, int page, int pageSize, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Создает новую сущность

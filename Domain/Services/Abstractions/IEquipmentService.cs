@@ -53,5 +53,5 @@ public interface IEquipmentService
     /// <param name="filters">Фильтры</param>
     /// <param name="cancellationToken">Токен отмены операции</param>
     /// <returns>Коллекция всех техник из системы, которые соответствуют фильтрам</returns>
-    Task<Equipment> GetByFiltersAsync(EquipmentFilters filters, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Equipment>> GetByFiltersAsync(EquipmentFilters filters, CancellationToken cancellationToken = default);
 }

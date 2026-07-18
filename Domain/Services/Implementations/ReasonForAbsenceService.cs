@@ -56,6 +56,10 @@ public class ReasonForAbsenceService(
 
     public Task<IEnumerable<ReasonForAbsence>> GetByFiltersAsync(ReasonForAbsenceFilters filters, CancellationToken cancellationToken = default)
     {
-        
+        return reasonForAbsenceRepository.FindAsync(r => 
+                filters.Name == null || r.Name.Contains(filters.Name),
+            filters.Page,
+            filters.PageSize,
+            cancellationToken);
     }
 }

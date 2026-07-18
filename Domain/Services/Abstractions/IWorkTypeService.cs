@@ -53,5 +53,5 @@ public interface IWorkTypeService
     /// <param name="filters">Фильтры</param>
     /// <param name="cancellationToken">Токен отмены операции</param>
     /// <returns>Коллекция всех типов работ из системы, которые соответствуют фильтрам</returns>
-    Task GetByFiltersAsync(WorkTypeFilters filters, CancellationToken cancellationToken = default);
+    Task<IEnumerable<WorkType>> GetByFiltersAsync(WorkTypeFilters filters, CancellationToken cancellationToken = default);
 }

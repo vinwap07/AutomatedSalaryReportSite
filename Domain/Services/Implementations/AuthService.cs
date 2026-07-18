@@ -13,7 +13,7 @@ public class AuthService(
 {
     public async Task LoginAsync(string username, string password, CancellationToken cancellationToken = default)
     {
-        var users = (await userRepository.FindAsync(user => user.Login == username, cancellationToken))
+        var users = (await userRepository.FindAsync(user => user.Login == username, 1, 1, cancellationToken))
             .ToList();
         if (users.Count == 0)
         {
