@@ -1,3 +1,4 @@
+using Domain.Dtos;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Repositories;
@@ -13,9 +14,9 @@ public class AuthService(
     ) : IAuthService
 {
     /// <inheritdoc />
-    public async Task LoginAsync(string username, string password, CancellationToken cancellationToken = default)
+    public async Task LoginAsync(LoginDto loginData, CancellationToken cancellationToken = default)
     {
-        var users = (await userRepository.FindAsync(user => user.Login == username, 1, 1, cancellationToken))
+        var users = (await userRepository.FindAsync(user => user.Login == loginData.Username, 1, 1, cancellationToken))
             .ToList();
         if (users.Count == 0)
         {
@@ -23,7 +24,7 @@ public class AuthService(
         }
         
         var user = users[0];
-        var result = passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
+        var result = passwordHasher.VerifyHashedPassword(user, user.PasswordHash, loginData.Password);
         if (result == PasswordVerificationResult.Failed)
         {
             throw new UnauthorizedException("Wrong username or password");

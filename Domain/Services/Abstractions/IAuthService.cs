@@ -1,3 +1,5 @@
+using Domain.Dtos;
+
 namespace Domain.Services.Abstractions;
 
 /// <summary>
@@ -8,9 +10,8 @@ public interface IAuthService
     /// <summary>
     /// Проверяет корректность логина и пароля от пользователя 
     /// </summary>
-    /// <param name="username">Логин</param>
-    /// <param name="password">Пароль</param>
+    /// <param name="loginData">Юзернейм и пароль от пользователя</param>
     /// <param name="cancellationToken">Токен отмены операции</param>
     /// <returns>Асинхронная операция</returns>
-    Task LoginAsync(string username, string password, CancellationToken cancellationToken = default);
+    Task LoginAsync(LoginDto loginData, CancellationToken cancellationToken = default);
 }

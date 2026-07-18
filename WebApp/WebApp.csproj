@@ -11,4 +11,9 @@
       <ProjectReference Include="..\Domain\Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Pages\Employees\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Account\Login.cshtml" />
+    </ItemGroup>
+
 </Project>
