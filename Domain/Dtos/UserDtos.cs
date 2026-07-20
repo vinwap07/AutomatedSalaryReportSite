@@ -27,7 +27,13 @@ public record CreateUserRequest
 public record UpdateUserRequest
 {
     public Guid Id { get; set; }
-    public string? Login { get; set; } = string.Empty;
-    public string? Password { get; set; } = string.Empty;
+
+    /// <summary>Null — оставить прежний логин</summary>
+    public string? Login { get; set; }
+
+    /// <summary>Null — оставить прежний пароль</summary>
+    public string? Password { get; set; }
+
+    /// <summary>Null — оставить прежнюю роль</summary>
     public Role? Role { get; set; }
 }

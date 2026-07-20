@@ -101,7 +101,16 @@ public class EditModel(
             return RedirectToPage(new { Id });
         }
 
-        var employee = await employeeService.GetByIdAsync(Id, cancellationToken);
+        EmployeeDetailsDto employee;
+        try
+        {
+            employee = await employeeService.GetByIdAsync(Id, cancellationToken);
+        }
+        catch (NotFoundException)
+        {
+            TempData["Error"] = "Работник не найден";
+            return RedirectToPage("/Admin/Employees/Index");
+        }
         if (employee.UserId != null)
         {
             TempData["Error"] = "У работника уже есть учётная запись";
@@ -137,7 +146,16 @@ public class EditModel(
             return RedirectToPage(new { Id });
         }
 
-        var employee = await employeeService.GetByIdAsync(Id, cancellationToken);
+        EmployeeDetailsDto employee;
+        try
+        {
+            employee = await employeeService.GetByIdAsync(Id, cancellationToken);
+        }
+        catch (NotFoundException)
+        {
+            TempData["Error"] = "Работник не найден";
+            return RedirectToPage("/Admin/Employees/Index");
+        }
         if (employee.UserId == null)
         {
             TempData["Error"] = "У работника нет учётной записи";
@@ -157,7 +175,16 @@ public class EditModel(
 
     public async Task<IActionResult> OnPostDeleteAccountAsync(CancellationToken cancellationToken)
     {
-        var employee = await employeeService.GetByIdAsync(Id, cancellationToken);
+        EmployeeDetailsDto employee;
+        try
+        {
+            employee = await employeeService.GetByIdAsync(Id, cancellationToken);
+        }
+        catch (NotFoundException)
+        {
+            TempData["Error"] = "Работник не найден";
+            return RedirectToPage("/Admin/Employees/Index");
+        }
         if (employee.UserId == null)
         {
             TempData["Error"] = "У работника нет учётной записи";
