@@ -1,52 +1,87 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+@{
+    var session = Context.GetSessionData();
+    var isAdmin = session?.Role == Role.Admin;
+}
+<!DOCTYPE html>
+<html lang="ru">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - WebApp</title>
-    <script type="importmap"></script>
+    <title>@ViewData["Title"] — Учёт работ</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/WebApp.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">WebApp</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+<header>
+    <nav class="navbar navbar-expand-lg navbar-dark app-navbar">
+        <div class="container-xxl px-3">
+            <a class="navbar-brand fw-semibold" href="/">🌾 Учёт работ</a>
+            @if (session != null)
+            {
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                        aria-controls="mainNav" aria-expanded="false" aria-label="Открыть меню">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
-                        </li>
+                <div class="collapse navbar-collapse" id="mainNav">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        @if (isAdmin)
+                        {
+                            <li class="nav-item"><a class="nav-link" asp-page="/Admin/Index">Журнал работ</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-page="/Admin/AddDay">Добавить день</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-page="/Reports/Index">Отчёт</a></li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Справочники
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" asp-page="/Admin/Employees/Index">Работники</a></li>
+                                    <li><a class="dropdown-item" asp-page="/Admin/Equipment/Index">Техника</a></li>
+                                    <li><a class="dropdown-item" asp-page="/Admin/WorkTypes/Index">Виды работ</a></li>
+                                    <li><a class="dropdown-item" asp-page="/Admin/Absences/Index">Причины отсутствия</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" asp-page="/Admin/Users/Index">Учётные записи</a></li>
+                                </ul>
+                            </li>
+                            <li class="nav-item"><a class="nav-link" asp-page="/Admin/Maintenance">Сервис</a></li>
+                        }
+                        else
+                        {
+                            <li class="nav-item"><a class="nav-link" asp-page="/Reports/Index">Мои работы</a></li>
+                        }
                     </ul>
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="navbar-text text-white-50">@session.Login</span>
+                        <form method="post" asp-page="/Logout" class="m-0">
+                            <button type="submit" class="btn btn-outline-light btn-sm">Выйти</button>
+                        </form>
+                    </div>
                 </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
-
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - WebApp - <a asp-area="" asp-page="/Privacy">Privacy</a>
+            }
         </div>
-    </footer>
+    </nav>
+</header>
+<main role="main" class="container-xxl px-3 py-3 pb-5">
+    @if (TempData["Success"] is string successMessage)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @successMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+        </div>
+    }
+    @if (TempData["Error"] is string errorMessage)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @errorMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+        </div>
+    }
+    @RenderBody()
+</main>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
 
-    @await RenderSectionAsync("Scripts", required: false)
+@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

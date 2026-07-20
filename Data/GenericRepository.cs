@@ -10,10 +10,9 @@ public class GenericRepository<TEntity, TKey>(AppDbContext dbContext)
     where TEntity : class
 {
     /// <inheritdoc />
-    public async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default, params string[] includes)
     {
-        return await dbContext.Set<TEntity>()
-            .AsNoTracking()
+        return await ApplyIncludes(dbContext.Set<TEntity>().AsNoTracking(), includes)
             .ToListAsync(cancellationToken);
     }
 
@@ -25,11 +24,11 @@ public class GenericRepository<TEntity, TKey>(AppDbContext dbContext)
     }
 
     /// <inheritdoc />
-    public async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate, int page, int pageSize, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate, int page, int pageSize, CancellationToken cancellationToken = default, params string[] includes)
     {
-        return await dbContext.Set<TEntity>()
-            .AsNoTracking()
+        return await ApplyIncludes(dbContext.Set<TEntity>().AsNoTracking(), includes)
             .Where(predicate)
+            .OrderBy(e => EF.Property<TKey>(e, "Id"))
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(cancellationToken);
@@ -52,5 +51,10 @@ public class GenericRepository<TEntity, TKey>(AppDbContext dbContext)
         }
         
         dbContext.Set<TEntity>().Remove(entity);
+    }
+
+    private static IQueryable<TEntity> ApplyIncludes(IQueryable<TEntity> query, string[] includes)
+    {
+        return includes.Aggregate(query, (current, include) => current.Include(include));
     }
 }

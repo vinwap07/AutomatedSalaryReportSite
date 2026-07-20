@@ -25,6 +25,15 @@ public interface IEmployeeService
     Task<EmployeeDetailsDto> UpdateAsync(UpdateEmployeeRequest request, CancellationToken cancellationToken = default);
     
     /// <summary>
+    /// Привязывает (или отвязывает при userId = null) учетную запись к сотруднику
+    /// </summary>
+    /// <param name="employeeId">Уникальный идентификатор сотрудника</param>
+    /// <param name="userId">Уникальный идентификатор учетной записи или null</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
+    /// <returns>Асинхронная операция</returns>
+    Task LinkUserAsync(Guid employeeId, Guid? userId, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Удаляет сотрудника из системы
     /// </summary>
     /// <param name="id">Уникальный идентификатор удаляемого сотрудника</param>

@@ -25,6 +25,20 @@ public static class WorkLogMappingExtensions
 
     public static void UpdateWorkLog(this UpdateWorkLogRequest request, WorkLog workLog)
     {
-        request.Adapt(workLog);
+        // Сотрудник и дата обязательны, поэтому null означает "не менять".
+        // Остальные поля опциональны у самой записи: null перезаписывает значение,
+        // чтобы можно было, например, заменить работу на причину отсутствия.
+        if (request.EmployeeId.HasValue)
+        {
+            workLog.EmployeeId = request.EmployeeId.Value;
+        }
+        if (request.Date.HasValue)
+        {
+            workLog.Date = request.Date.Value;
+        }
+        workLog.WorkTypeId = request.WorkTypeId;
+        workLog.WorkHours = request.WorkHours;
+        workLog.WorkCost = request.WorkCost;
+        workLog.ReasonForAbsenceId = request.ReasonForAbsenceId;
     }
 }

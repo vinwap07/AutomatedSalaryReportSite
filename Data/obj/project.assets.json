@@ -2,18 +2,18 @@
   "version": 4,
   "targets": {
     "net10.0": {
-      "EntityFrameworkCore.NamingConventions/8.0.0": {
+      "EFCore.NamingConventions/10.0.0": {
         "type": "package",
         "dependencies": {
-          "Microsoft.EntityFrameworkCore": "8.0.0",
-          "Microsoft.EntityFrameworkCore.Relational": "8.0.0",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.0"
+          "Microsoft.EntityFrameworkCore": "[10.0.1, 11.0.0)",
+          "Microsoft.EntityFrameworkCore.Relational": "[10.0.1, 11.0.0)",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.1"
         },
         "compile": {
-          "lib/net8.0/EFCore.NamingConventions.dll": {}
+          "lib/net10.0/EFCore.NamingConventions.dll": {}
         },
         "runtime": {
-          "lib/net8.0/EFCore.NamingConventions.dll": {}
+          "lib/net10.0/EFCore.NamingConventions.dll": {}
         }
       },
       "Mapster/10.0.11": {
@@ -778,17 +778,16 @@
     }
   },
   "libraries": {
-    "EntityFrameworkCore.NamingConventions/8.0.0": {
-      "sha512": "VWL8W2C+sWEvr1bu3reHcvxwSUfUDrRb5ZUaSSPSgT4JZ5rtlWVtyp0oQSSoMVByChZ2Q5NVkQ6n9hQDw5Rf4g==",
+    "EFCore.NamingConventions/10.0.0": {
+      "sha512": "gEJLy60tsQaPT69vkNFtyYKd2WcBcPB71vE2IKqAuJfP4UrC3gh4DAMR9+TpUpxGCQyRQ3IOO4SzIb+KfjTw6Q==",
       "type": "package",
-      "path": "entityframeworkcore.namingconventions/8.0.0",
+      "path": "efcore.namingconventions/10.0.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "README.md",
-        "entityframeworkcore.namingconventions.8.0.0.nupkg.sha512",
-        "entityframeworkcore.namingconventions.nuspec",
-        "lib/net8.0/EFCore.NamingConventions.dll"
+        "efcore.namingconventions.10.0.0.nupkg.sha512",
+        "efcore.namingconventions.nuspec",
+        "lib/net10.0/EFCore.NamingConventions.dll"
       ]
     },
     "Mapster/10.0.11": {
@@ -1767,25 +1766,30 @@
   "projectFileDependencyGroups": {
     "net10.0": [
       "Domain >= 1.0.0",
-      "EntityFrameworkCore.NamingConventions >= 8.0.0",
+      "EFCore.NamingConventions >= 10.0.0",
       "Microsoft.EntityFrameworkCore >= 10.0.10",
       "Npgsql.EntityFrameworkCore.PostgreSQL >= 10.0.3"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\adeli\\.nuget\\packages\\": {}
+    "C:\\Users\\MicrosoftShit\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\adeli\\Рабочий стол\\practice\\AutomatedSalaryReport\\Data\\Data.csproj",
+      "projectUniqueName": "C:\\Projects\\AutomatedSalaryReportSite\\Data\\Data.csproj",
       "projectName": "Data",
-      "projectPath": "C:\\Users\\adeli\\Рабочий стол\\practice\\AutomatedSalaryReport\\Data\\Data.csproj",
-      "packagesPath": "C:\\Users\\adeli\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\adeli\\Рабочий стол\\practice\\AutomatedSalaryReport\\Data\\obj\\",
+      "projectPath": "C:\\Projects\\AutomatedSalaryReportSite\\Data\\Data.csproj",
+      "packagesPath": "C:\\Users\\MicrosoftShit\\.nuget\\packages\\",
+      "outputPath": "C:\\Projects\\AutomatedSalaryReportSite\\Data\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
-        "C:\\Users\\adeli\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\MicrosoftShit\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -1801,8 +1805,8 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
-            "C:\\Users\\adeli\\Рабочий стол\\practice\\AutomatedSalaryReport\\Domain\\Domain.csproj": {
-              "projectPath": "C:\\Users\\adeli\\Рабочий стол\\practice\\AutomatedSalaryReport\\Domain\\Domain.csproj"
+            "C:\\Projects\\AutomatedSalaryReportSite\\Domain\\Domain.csproj": {
+              "projectPath": "C:\\Projects\\AutomatedSalaryReportSite\\Domain\\Domain.csproj"
             }
           }
         }
@@ -1817,16 +1821,16 @@
         "auditLevel": "low",
         "auditMode": "all"
       },
-      "SdkAnalysisLevel": "10.0.300"
+      "SdkAnalysisLevel": "10.0.400"
     },
     "frameworks": {
       "net10.0": {
         "framework": "net10.0",
         "targetAlias": "net10.0",
         "dependencies": {
-          "EntityFrameworkCore.NamingConventions": {
+          "EFCore.NamingConventions": {
             "target": "Package",
-            "version": "[8.0.0, )"
+            "version": "[10.0.0, )"
           },
           "Microsoft.EntityFrameworkCore": {
             "target": "Package",
@@ -1853,7 +1857,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json",
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.400-preview.0.26322.102/PortableRuntimeIdentifierGraph.json",
         "packagesToPrune": {
           "Microsoft.CSharp": "(,4.7.32767]",
           "Microsoft.VisualBasic": "(,10.4.32767]",
@@ -2136,7 +2140,7 @@
       "code": "NU1903",
       "level": "Warning",
       "warningLevel": 1,
-      "message": "У пакета \"System.Security.Cryptography.Xml\" 8.0.2 есть известная уязвимость https://github.com/advisories/GHSA-37gx-xxp4-5rgx (уровень серьезности: высокий уровень)",
+      "message": "Package 'System.Security.Cryptography.Xml' 8.0.2 has a known high severity vulnerability, https://github.com/advisories/GHSA-37gx-xxp4-5rgx",
       "libraryId": "System.Security.Cryptography.Xml",
       "targetGraphs": [
         "net10.0"
@@ -2146,7 +2150,7 @@
       "code": "NU1903",
       "level": "Warning",
       "warningLevel": 1,
-      "message": "У пакета \"System.Security.Cryptography.Xml\" 8.0.2 есть известная уязвимость https://github.com/advisories/GHSA-w3x6-4m5h-cxqf (уровень серьезности: высокий уровень)",
+      "message": "Package 'System.Security.Cryptography.Xml' 8.0.2 has a known high severity vulnerability, https://github.com/advisories/GHSA-w3x6-4m5h-cxqf",
       "libraryId": "System.Security.Cryptography.Xml",
       "targetGraphs": [
         "net10.0"

@@ -13,6 +13,23 @@ public class WorkLogConfiguration : IEntityTypeConfiguration<WorkLog>
     {
         builder.HasKey(x => x.Id);
 
+        builder.HasIndex(x => x.Date);
+
+        builder.HasOne(x => x.Employee)
+            .WithMany()
+            .HasForeignKey(x => x.EmployeeId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(x => x.WorkType)
+            .WithMany()
+            .HasForeignKey(x => x.WorkTypeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(x => x.ReasonForAbsence)
+            .WithMany()
+            .HasForeignKey(x => x.ReasonForAbsenceId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.OwnsOne(x => x.WorkCost, costBuilder =>
         {
             costBuilder.Property(c => c.Rate)

@@ -1,0 +1,98 @@
+@page
+@model WebApp.Pages.Admin.Employees.EditModel
+@{
+    ViewData["Title"] = "Работник";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <h1 class="h3 m-0">@Model.Employee?.Name</h1>
+    <a class="btn btn-outline-secondary" asp-page="/Admin/Employees/Index">← К списку</a>
+</div>
+
+<div class="row g-3">
+    <div class="col-12 col-lg-6">
+        <div class="card h-100">
+            <div class="card-header">Данные работника</div>
+            <div class="card-body">
+                <form method="post" asp-page-handler="Save">
+                    <div class="mb-3">
+                        <label class="form-label">ФИО</label>
+                        <input name="Name" value="@Model.Name" class="form-control" required maxlength="255" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Специальность</label>
+                        <select name="Specialty" class="form-select">
+                            @foreach (var specialty in Enum.GetValues<Specialty>())
+                            {
+                                <option value="@specialty" selected="@(specialty == Model.Specialty)">@specialty.GetDisplayName()</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Техника</label>
+                        <select name="EquipmentId" class="form-select">
+                            <option value="">— без техники —</option>
+                            @foreach (var equipment in Model.EquipmentList)
+                            {
+                                <option value="@equipment.Id" selected="@(equipment.Id == Model.EquipmentId)">@equipment.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Комментарий</label>
+                        <input name="Comment" value="@Model.Comment" class="form-control" />
+                    </div>
+                    <button type="submit" class="btn btn-success">Сохранить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-6">
+        <div class="card h-100">
+            <div class="card-header">Учётная запись для входа</div>
+            <div class="card-body">
+                @if (Model.Employee?.UserId == null)
+                {
+                    <p class="text-muted">У работника нет учётной записи. Создайте её, чтобы работник мог входить и смотреть свои работы.</p>
+                    <form method="post" asp-page-handler="CreateAccount">
+                        <div class="mb-3">
+                            <label class="form-label">Логин</label>
+                            <input name="AccountLogin" class="form-control" required maxlength="100" autocomplete="off" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Пароль</label>
+                            <input name="AccountPassword" type="text" class="form-control" required autocomplete="off" />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Создать учётную запись</button>
+                    </form>
+                }
+                else
+                {
+                    <p>Логин: <span class="badge text-bg-success fs-6">@Model.Employee.UserLogin</span></p>
+                    <form method="post" asp-page-handler="ResetPassword" class="mb-3">
+                        <label class="form-label">Новый пароль</label>
+                        <div class="d-flex gap-2">
+                            <input name="AccountPassword" type="text" class="form-control" required autocomplete="off" />
+                            <button type="submit" class="btn btn-outline-primary text-nowrap">Сменить пароль</button>
+                        </div>
+                    </form>
+                    <form method="post" asp-page-handler="DeleteAccount"
+                          data-confirm="Удалить учётную запись «@Model.Employee.UserLogin»? Работник больше не сможет входить на сайт.">
+                        <button type="submit" class="btn btn-outline-danger btn-sm">Удалить учётную запись</button>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-danger mt-3">
+    <div class="card-body d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <span class="text-muted">Удаление работника также удалит все его записи в журнале работ.</span>
+        <form method="post" asp-page-handler="Delete"
+              data-confirm="Удалить работника «@Model.Employee?.Name» вместе со ВСЕМИ его записями о работах? Это действие нельзя отменить.">
+            <button type="submit" class="btn btn-danger">Удалить работника</button>
+        </form>
+    </div>
+</div>

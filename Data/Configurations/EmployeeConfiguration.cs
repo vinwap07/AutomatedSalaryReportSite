@@ -19,5 +19,15 @@ public class EmployeeConfiguration: IEntityTypeConfiguration<Employee>
         builder.Property(x => x.Specialty)
             .HasConversion<string>()
             .HasMaxLength(30);
+
+        builder.HasOne(x => x.User)
+            .WithOne()
+            .HasForeignKey<Employee>(x => x.UserId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasOne(x => x.Equipment)
+            .WithMany()
+            .HasForeignKey(x => x.EquipmentId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

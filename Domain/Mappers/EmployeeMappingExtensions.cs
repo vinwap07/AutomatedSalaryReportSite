@@ -23,6 +23,17 @@ public static class EmployeeMappingExtensions
 
     public static void UpdateEmployee(this UpdateEmployeeRequest request, Employee existingEmployee)
     {
-        request.Adapt(existingEmployee);
+        // Имя и специальность обязательны, поэтому null означает "не менять".
+        // Техника и комментарий опциональны: null очищает значение.
+        if (request.Name != null)
+        {
+            existingEmployee.Name = request.Name;
+        }
+        if (request.Specialty.HasValue)
+        {
+            existingEmployee.Specialty = request.Specialty.Value;
+        }
+        existingEmployee.EquipmentId = request.EquipmentId;
+        existingEmployee.Comment = request.Comment;
     }
 }

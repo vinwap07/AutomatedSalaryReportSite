@@ -19,6 +19,7 @@ public record EmployeeFilters : Filters
     public string? Name { get; set; }
     public Specialty? Specialty { get; set; }
     public Guid? EquipmentId { get; set; }
+    public Guid? UserId { get; set; }
 }
 
 public record WorkLogFilters : Filters

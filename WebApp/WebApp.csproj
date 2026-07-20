@@ -12,12 +12,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <_ContentIncludedByDefault Remove="Pages\Employees\Index.cshtml" />
-      <_ContentIncludedByDefault Remove="Pages\Account\Login.cshtml" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Middlewares\" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.10">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
     </ItemGroup>
 
 </Project>

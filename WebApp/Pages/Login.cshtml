@@ -1,0 +1,29 @@
+@page
+@model WebApp.Pages.LoginModel
+@{
+    ViewData["Title"] = "Вход";
+}
+
+<div class="login-wrapper">
+    <div class="card login-card shadow-sm">
+        <div class="card-body p-4">
+            <h1 class="h4 text-center mb-4">🌾 Учёт работ</h1>
+            @if (Model.ErrorMessage != null)
+            {
+                <div class="alert alert-danger py-2">@Model.ErrorMessage</div>
+            }
+            <form method="post">
+                <input type="hidden" asp-for="ReturnUrl" />
+                <div class="mb-3">
+                    <label asp-for="Username" class="form-label">Логин</label>
+                    <input asp-for="Username" class="form-control" autocomplete="username" autofocus />
+                </div>
+                <div class="mb-4">
+                    <label asp-for="Password" class="form-label">Пароль</label>
+                    <input asp-for="Password" type="password" class="form-control" autocomplete="current-password" />
+                </div>
+                <button type="submit" class="btn btn-success w-100">Войти</button>
+            </form>
+        </div>
+    </div>
+</div>

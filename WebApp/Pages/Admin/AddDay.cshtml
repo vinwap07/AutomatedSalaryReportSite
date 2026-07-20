@@ -1,0 +1,216 @@
+@page
+@using Domain.ValueObjects
+@model WebApp.Pages.Admin.AddDayModel
+@{
+    ViewData["Title"] = "Добавить день";
+    var units = new[] { UnitOfMeasure.Ton, UnitOfMeasure.Trip, UnitOfMeasure.Hectare };
+}
+
+@{
+    async Task RenderRowAsync(string index, AddDayModel.RowInput row)
+    {
+        <tr class="entry-row">
+            <td data-label="">
+                <input type="hidden" name="Rows.Index" value="@index" />
+            </td>
+            <td data-label="Работник">
+                <select name="Rows[@index].EmployeeId" class="form-select form-select-sm">
+                    <option value="">— работник —</option>
+                    @foreach (var employee in Model.Employees)
+                    {
+                        <option value="@employee.Id" selected="@(employee.Id == row.EmployeeId)">@employee.Name</option>
+                    }
+                </select>
+            </td>
+            <td data-label="Вид работы">
+                <select name="Rows[@index].WorkTypeId" class="form-select form-select-sm">
+                    <option value="">— вид работы —</option>
+                    @foreach (var workType in Model.WorkTypes)
+                    {
+                        <option value="@workType.Id" selected="@(workType.Id == row.WorkTypeId)">@workType.Name</option>
+                    }
+                </select>
+            </td>
+            <td data-label="Часы" class="entry-narrow">
+                <input type="number" name="Rows[@index].WorkHours" value="@row.WorkHours" min="0" max="24"
+                       class="form-control form-control-sm" placeholder="ч" />
+            </td>
+            <td data-label="Расценка" class="entry-narrow">
+                <input type="text" inputmode="decimal" name="Rows[@index].Rate"
+                       value="@row.Rate?.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)"
+                       class="form-control form-control-sm rate-input" placeholder="₽" />
+            </td>
+            <td data-label="Объём" class="entry-narrow">
+                <input type="text" inputmode="decimal" name="Rows[@index].Volume"
+                       value="@row.Volume?.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)"
+                       class="form-control form-control-sm volume-input" placeholder="объём" />
+            </td>
+            <td data-label="Ед. изм.">
+                <select name="Rows[@index].Unit" class="form-select form-select-sm">
+                    @foreach (var unit in units)
+                    {
+                        <option value="@unit" selected="@(unit == (row.Unit ?? UnitOfMeasure.Ton))">@unit.GetDisplayName()</option>
+                    }
+                </select>
+            </td>
+            <td data-label="Причина отсутствия">
+                <select name="Rows[@index].ReasonForAbsenceId" class="form-select form-select-sm">
+                    <option value="">— отсутствие —</option>
+                    @foreach (var reason in Model.Reasons)
+                    {
+                        <option value="@reason.Id" selected="@(reason.Id == row.ReasonForAbsenceId)">@reason.Name</option>
+                    }
+                </select>
+            </td>
+            <td data-label="Сумма" class="num">
+                <span class="row-sum fw-semibold">—</span>
+            </td>
+            <td data-label="">
+                <button type="button" class="btn btn-outline-danger btn-sm remove-row w-100" title="Убрать строку">✕</button>
+            </td>
+        </tr>
+    }
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <h1 class="h3 m-0">Добавить работы за день</h1>
+    <a class="btn btn-outline-secondary" asp-page="/Admin/Index">← К журналу</a>
+</div>
+
+@if (Model.RowErrors.Count > 0)
+{
+    <div class="alert alert-danger">
+        <ul class="m-0 ps-3">
+            @foreach (var error in Model.RowErrors)
+            {
+                <li>@error</li>
+            }
+        </ul>
+    </div>
+}
+
+<form method="post" id="dayForm">
+    <div class="card mb-3">
+        <div class="card-body py-3">
+            <div class="row g-2 align-items-end">
+                <div class="col-12 col-md-3">
+                    <label class="form-label mb-1">Дата</label>
+                    <input type="date" name="Date" id="dayDate" value="@Model.Date.ToString("yyyy-MM-dd")" class="form-control" required />
+                </div>
+                <div class="col-12 col-md-9 d-flex flex-wrap gap-2">
+                    @if (Model.PreviousDay != null)
+                    {
+                        <a href="#" class="btn btn-outline-primary prefill-link" data-prefill="employees">
+                            👥 Повторить работников (@Model.PreviousDay.Value.ToString("dd.MM"))
+                        </a>
+                        <a href="#" class="btn btn-outline-primary prefill-link" data-prefill="full">
+                            📋 Повторить день полностью (@Model.PreviousDay.Value.ToString("dd.MM"))
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="text-muted align-self-center">Прошлых дней с записями ещё нет — копировать нечего.</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-sm align-middle bg-white entry-table" id="entryTable">
+            <thead class="table-light">
+            <tr>
+                <th style="width:1%"></th>
+                <th style="min-width:180px">Работник</th>
+                <th style="min-width:180px">Вид работы</th>
+                <th style="width:80px">Часы</th>
+                <th style="width:100px">Расценка</th>
+                <th style="width:100px">Объём</th>
+                <th style="width:110px">Ед. изм.</th>
+                <th style="min-width:160px">Причина отсутствия</th>
+                <th style="width:110px" class="num">Сумма</th>
+                <th style="width:1%"></th>
+            </tr>
+            </thead>
+            <tbody id="rowsBody">
+            @for (var i = 0; i < Model.Rows.Count; i++)
+            {
+                await RenderRowAsync(i.ToString(), Model.Rows[i]);
+            }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-2 mb-4">
+        <button type="button" class="btn btn-outline-success" id="addRowBtn">＋ Добавить строку</button>
+        <div class="d-flex align-items-center gap-3">
+            <span class="text-muted">Итого за день: <span class="fw-bold" id="dayTotal">0,00</span> ₽</span>
+            <button type="submit" class="btn btn-success px-4">Сохранить</button>
+        </div>
+    </div>
+</form>
+
+<template id="rowTemplate">
+    @{ await RenderRowAsync("__idx__", new AddDayModel.RowInput()); }
+</template>
+
+@section Scripts {
+    <script>
+        (function () {
+            let rowCounter = @Model.Rows.Count;
+            const rowsBody = document.getElementById('rowsBody');
+            const template = document.getElementById('rowTemplate');
+
+            function parseNum(value) {
+                const n = parseFloat((value || '').replace(',', '.').replace(/\s/g, ''));
+                return isNaN(n) ? 0 : n;
+            }
+
+            function formatMoney(value) {
+                return value.toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
+
+            function recalc() {
+                let total = 0;
+                rowsBody.querySelectorAll('tr.entry-row').forEach(function (row) {
+                    const rate = parseNum(row.querySelector('.rate-input')?.value);
+                    const volume = parseNum(row.querySelector('.volume-input')?.value);
+                    const sum = rate * volume;
+                    total += sum;
+                    const sumCell = row.querySelector('.row-sum');
+                    if (sumCell) sumCell.textContent = sum > 0 ? formatMoney(sum) : '—';
+                });
+                document.getElementById('dayTotal').textContent = formatMoney(total);
+            }
+
+            document.getElementById('addRowBtn').addEventListener('click', function () {
+                const html = template.innerHTML.replaceAll('__idx__', rowCounter++);
+                rowsBody.insertAdjacentHTML('beforeend', html);
+            });
+
+            rowsBody.addEventListener('click', function (event) {
+                const btn = event.target.closest('.remove-row');
+                if (btn) {
+                    btn.closest('tr').remove();
+                    recalc();
+                }
+            });
+
+            rowsBody.addEventListener('input', function (event) {
+                if (event.target.matches('.rate-input, .volume-input')) {
+                    recalc();
+                }
+            });
+
+            document.querySelectorAll('.prefill-link').forEach(function (link) {
+                link.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    const date = document.getElementById('dayDate').value;
+                    window.location = '?Date=' + encodeURIComponent(date) + '&prefill=' + link.dataset.prefill;
+                });
+            });
+
+            recalc();
+        })();
+    </script>
+}

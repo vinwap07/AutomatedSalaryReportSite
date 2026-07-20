@@ -1,0 +1,98 @@
+@page
+@using Domain.ValueObjects
+@model WebApp.Pages.Admin.EditWorkLogModel
+@{
+    ViewData["Title"] = "Редактирование записи";
+    var units = new[] { UnitOfMeasure.Ton, UnitOfMeasure.Trip, UnitOfMeasure.Hectare };
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <h1 class="h3 m-0">Редактирование записи</h1>
+    <a class="btn btn-outline-secondary" asp-page="/Admin/Index">← К журналу</a>
+</div>
+
+@if (Model.Errors.Count > 0)
+{
+    <div class="alert alert-danger">
+        <ul class="m-0 ps-3">
+            @foreach (var error in Model.Errors)
+            {
+                <li>@error</li>
+            }
+        </ul>
+    </div>
+}
+
+<div class="card" style="max-width: 640px">
+    <div class="card-body">
+        <form method="post">
+            <div class="row g-3">
+                <div class="col-12 col-sm-6">
+                    <label class="form-label">Дата</label>
+                    <input type="date" name="Date" value="@Model.Date.ToString("yyyy-MM-dd")" class="form-control" required />
+                </div>
+                <div class="col-12 col-sm-6">
+                    <label class="form-label">Работник</label>
+                    <select name="EmployeeId" class="form-select" required>
+                        <option value="">— работник —</option>
+                        @foreach (var employee in Model.Employees)
+                        {
+                            <option value="@employee.Id" selected="@(employee.Id == Model.EmployeeId)">@employee.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Вид работы</label>
+                    <select name="WorkTypeId" class="form-select">
+                        <option value="">— не выбрано —</option>
+                        @foreach (var workType in Model.WorkTypes)
+                        {
+                            <option value="@workType.Id" selected="@(workType.Id == Model.WorkTypeId)">@workType.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-4">
+                    <label class="form-label">Часы</label>
+                    <input type="number" name="WorkHours" value="@Model.WorkHours" min="0" max="24" class="form-control" />
+                </div>
+                <div class="col-4">
+                    <label class="form-label">Расценка, ₽</label>
+                    <input type="text" inputmode="decimal" name="Rate"
+                           value="@Model.Rate?.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)"
+                           class="form-control" />
+                </div>
+                <div class="col-4">
+                    <label class="form-label">Объём</label>
+                    <input type="text" inputmode="decimal" name="Volume"
+                           value="@Model.Volume?.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)"
+                           class="form-control" />
+                </div>
+                <div class="col-12 col-sm-6">
+                    <label class="form-label">Единица измерения</label>
+                    <select name="Unit" class="form-select">
+                        @foreach (var unit in units)
+                        {
+                            <option value="@unit" selected="@(unit == Model.Unit)">@unit.GetDisplayName()</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-12 col-sm-6">
+                    <label class="form-label">Причина отсутствия</label>
+                    <select name="ReasonForAbsenceId" class="form-select">
+                        <option value="">— не выбрано —</option>
+                        @foreach (var reason in Model.Reasons)
+                        {
+                            <option value="@reason.Id" selected="@(reason.Id == Model.ReasonForAbsenceId)">@reason.Name</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between mt-4">
+                <button type="submit" class="btn btn-success px-4">Сохранить</button>
+            </div>
+        </form>
+        <form method="post" asp-page-handler="Delete" data-confirm="Удалить эту запись?" class="mt-2">
+            <button type="submit" class="btn btn-outline-danger btn-sm">Удалить запись</button>
+        </form>
+    </div>
+</div>

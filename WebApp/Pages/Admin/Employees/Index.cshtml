@@ -1,0 +1,97 @@
+@page
+@model WebApp.Pages.Admin.Employees.IndexModel
+@{
+    ViewData["Title"] = "Работники";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <h1 class="h3 m-0">Работники</h1>
+    <button class="btn btn-success" type="button" data-bs-toggle="collapse" data-bs-target="#addForm">＋ Добавить работника</button>
+</div>
+
+<div class="collapse mb-3" id="addForm">
+    <div class="card">
+        <div class="card-body">
+            <form method="post" asp-page-handler="Create" class="row g-2 align-items-end">
+                <div class="col-12 col-md-3">
+                    <label class="form-label mb-1">ФИО</label>
+                    <input name="Name" class="form-control" required maxlength="255" />
+                </div>
+                <div class="col-12 col-md-3">
+                    <label class="form-label mb-1">Специальность</label>
+                    <select name="Specialty" class="form-select">
+                        @foreach (var specialty in Enum.GetValues<Specialty>())
+                        {
+                            <option value="@specialty">@specialty.GetDisplayName()</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-12 col-md-3">
+                    <label class="form-label mb-1">Техника</label>
+                    <select name="EquipmentId" class="form-select">
+                        <option value="">— без техники —</option>
+                        @foreach (var equipment in Model.EquipmentList)
+                        {
+                            <option value="@equipment.Id">@equipment.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-12 col-md-2">
+                    <label class="form-label mb-1">Комментарий</label>
+                    <input name="Comment" class="form-control" />
+                </div>
+                <div class="col-12 col-md-1">
+                    <button type="submit" class="btn btn-success w-100">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@if (Model.Employees.Count == 0)
+{
+    <div class="alert alert-secondary">Работники ещё не добавлены.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-sm table-hover align-middle bg-white table-stack">
+            <thead class="table-light">
+            <tr>
+                <th>ФИО</th>
+                <th>Специальность</th>
+                <th>Техника</th>
+                <th>Учётная запись</th>
+                <th>Комментарий</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var employee in Model.Employees)
+            {
+                <tr>
+                    <td data-label="ФИО" class="fw-semibold">@employee.Name</td>
+                    <td data-label="Специальность">@employee.Specialty.GetDisplayName()</td>
+                    <td data-label="Техника">@(string.IsNullOrEmpty(employee.EquipmentName) ? "—" : employee.EquipmentName)</td>
+                    <td data-label="Учётная запись">
+                        @if (employee.UserId != null)
+                        {
+                            <span class="badge text-bg-success">@employee.UserLogin</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted">нет</span>
+                        }
+                    </td>
+                    <td data-label="Комментарий" class="text-muted">@(string.IsNullOrEmpty(employee.Comment) ? "—" : employee.Comment)</td>
+                    <td data-label="">
+                        <div class="d-flex justify-content-end">
+                            <a class="btn btn-outline-primary btn-sm" asp-page="/Admin/Employees/Edit" asp-route-id="@employee.Id">Изменить</a>
+                        </div>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}

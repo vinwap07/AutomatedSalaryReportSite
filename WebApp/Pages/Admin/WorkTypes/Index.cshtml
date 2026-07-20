@@ -1,0 +1,76 @@
+@page
+@model WebApp.Pages.Admin.WorkTypes.IndexModel
+@{
+    ViewData["Title"] = "Виды работ";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <h1 class="h3 m-0">Виды работ</h1>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body py-3">
+        <form method="post" asp-page-handler="Create" class="row g-2 align-items-end mb-2">
+            <div class="col-12 col-md-6">
+                <label class="form-label mb-1">Новый вид работы</label>
+                <input name="Name" class="form-control" required placeholder="Например: раздача кормов" />
+            </div>
+            <div class="col-12 col-md-2">
+                <button type="submit" class="btn btn-success w-100">Добавить</button>
+            </div>
+        </form>
+        <form method="get" class="row g-2 align-items-center">
+            <div class="col-12 col-md-6">
+                <input name="Search" value="@Model.Search" class="form-control form-control-sm" placeholder="🔍 Поиск по названию…" />
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-outline-secondary btn-sm">Найти</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (Model.Items.Count == 0)
+{
+    <div class="alert alert-secondary">Ничего не найдено.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-sm table-hover align-middle bg-white" style="max-width: 720px">
+            <tbody>
+            @foreach (var item in Model.Items)
+            {
+                if (item.Id == Model.EditId)
+                {
+                    <tr>
+                        <td colspan="2">
+                            <form method="post" asp-page-handler="Update" asp-route-id="@item.Id" class="d-flex gap-2">
+                                <input name="Name" value="@item.Name" class="form-control form-control-sm" required />
+                                <button type="submit" class="btn btn-success btn-sm">Сохранить</button>
+                                <a class="btn btn-outline-secondary btn-sm" asp-page="/Admin/WorkTypes/Index">Отмена</a>
+                            </form>
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    <tr>
+                        <td>@item.Name</td>
+                        <td style="width:120px">
+                            <div class="d-flex gap-1 justify-content-end">
+                                <a class="btn btn-outline-primary btn-sm" asp-page="/Admin/WorkTypes/Index" asp-route-EditId="@item.Id">✎</a>
+                                <form method="post" asp-page-handler="Delete" data-confirm="Удалить вид работы «@item.Name»?" class="m-0">
+                                    <input type="hidden" name="id" value="@item.Id" />
+                                    <input type="hidden" name="name" value="@item.Name" />
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">✕</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+            </tbody>
+        </table>
+    </div>
+}

@@ -1,0 +1,105 @@
+@page
+@model WebApp.Pages.Admin.Users.IndexModel
+@{
+    ViewData["Title"] = "Учётные записи";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <h1 class="h3 m-0">Учётные записи</h1>
+</div>
+
+<div class="alert alert-info py-2">
+    Учётные записи для работников удобнее создавать со страницы
+    <a asp-page="/Admin/Employees/Index">Работники</a> — тогда запись сразу привяжется к работнику.
+    Здесь можно создавать записи администраторов и менять пароли.
+</div>
+
+<div class="card mb-3">
+    <div class="card-body py-3">
+        <form method="post" asp-page-handler="Create" class="row g-2 align-items-end">
+            <div class="col-12 col-md-3">
+                <label class="form-label mb-1">Логин</label>
+                <input name="Login" class="form-control" required maxlength="100" autocomplete="off" />
+            </div>
+            <div class="col-12 col-md-3">
+                <label class="form-label mb-1">Пароль</label>
+                <input name="Password" type="text" class="form-control" required autocomplete="off" />
+            </div>
+            <div class="col-12 col-md-3">
+                <label class="form-label mb-1">Роль</label>
+                <select name="Role" class="form-select">
+                    <option value="@Role.User">Работник</option>
+                    <option value="@Role.Admin">Администратор</option>
+                </select>
+            </div>
+            <div class="col-12 col-md-2">
+                <button type="submit" class="btn btn-success w-100">Создать</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-sm table-hover align-middle bg-white table-stack" style="max-width: 900px">
+        <thead class="table-light">
+        <tr>
+            <th>Логин</th>
+            <th>Роль</th>
+            <th>Работник</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var user in Model.Users)
+        {
+            <tr>
+                <td data-label="Логин" class="fw-semibold">
+                    @user.Login
+                    @if (user.Id == Model.CurrentUserId)
+                    {
+                        <span class="badge text-bg-secondary">это вы</span>
+                    }
+                </td>
+                <td data-label="Роль">
+                    @if (user.Role == Role.Admin)
+                    {
+                        <span class="badge text-bg-danger">Администратор</span>
+                    }
+                    else
+                    {
+                        <span class="badge text-bg-primary">Работник</span>
+                    }
+                </td>
+                <td data-label="Работник">
+                    @(Model.EmployeeNamesByUserId.TryGetValue(user.Id, out var employeeName) ? employeeName : "—")
+                </td>
+                <td data-label="">
+                    @if (user.Id == Model.EditId)
+                    {
+                        <form method="post" asp-page-handler="ResetPassword" asp-route-id="@user.Id" class="d-flex gap-2 justify-content-end">
+                            <input name="Password" type="text" class="form-control form-control-sm" style="max-width:200px"
+                                   placeholder="Новый пароль" required autocomplete="off" />
+                            <button type="submit" class="btn btn-success btn-sm text-nowrap">Сохранить</button>
+                            <a class="btn btn-outline-secondary btn-sm" asp-page="/Admin/Users/Index">Отмена</a>
+                        </form>
+                    }
+                    else
+                    {
+                        <div class="d-flex gap-1 justify-content-end">
+                            <a class="btn btn-outline-primary btn-sm" asp-page="/Admin/Users/Index" asp-route-EditId="@user.Id">Сменить пароль</a>
+                            @if (user.Id != Model.CurrentUserId)
+                            {
+                                <form method="post" asp-page-handler="Delete" data-confirm="Удалить учётную запись «@user.Login»?" class="m-0">
+                                    <input type="hidden" name="id" value="@user.Id" />
+                                    <input type="hidden" name="login" value="@user.Login" />
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">✕</button>
+                                </form>
+                            }
+                        </div>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

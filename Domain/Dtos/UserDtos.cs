@@ -14,6 +14,7 @@ public record UserListItemDto
 {
     public Guid Id { get; init; }
     public string Login { get; init; } = string.Empty;
+    public Role Role { get; init; }
 }
 
 public record CreateUserRequest

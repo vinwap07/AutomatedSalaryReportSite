@@ -4,12 +4,8 @@ html {
 
 @media (min-width: 768px) {
   html {
-    font-size: 16px;
+    font-size: 15px;
   }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 html {
@@ -18,14 +14,173 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
+  background-color: #f4f5f2;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+.app-navbar {
+  background-color: #2d6a2f;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+/* Плитки итогов */
+.stat-card {
+  background: #fff;
+  border: 1px solid #e3e5e0;
+  border-radius: 0.6rem;
+  padding: 0.75rem 1rem;
+  height: 100%;
+}
+
+.stat-card .stat-label {
+  color: #6c757d;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.stat-card .stat-value {
+  font-size: 1.35rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Числовые колонки */
+.num {
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Строка-заголовок дня в журнале */
+tr.day-header td {
+  background-color: #e7efe7 !important;
+  font-weight: 600;
+}
+
+/* Карточки-таблицы: на мобильных строки превращаются в блоки */
+@media (max-width: 767.98px) {
+  .table-stack {
+    border: 0;
+  }
+
+  .table-stack thead {
+    display: none;
+  }
+
+  .table-stack tbody,
+  .table-stack tr,
+  .table-stack td {
+    display: block;
+    width: 100%;
+  }
+
+  .table-stack tbody tr {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    margin-bottom: 0.75rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .table-stack tbody tr.day-header {
+    background-color: #e7efe7;
+    padding: 0.4rem 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .table-stack tbody td {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    border: 0;
+    padding: 0.2rem 0;
+    text-align: right;
+    background: transparent !important;
+  }
+
+  .table-stack tbody td::before {
+    content: attr(data-label);
+    font-weight: 500;
+    color: #6c757d;
+    text-align: left;
+    flex-shrink: 0;
+  }
+
+  .table-stack tbody td[data-label=""]::before,
+  .table-stack tbody td:not([data-label])::before {
+    content: none;
+  }
+
+  .table-stack tbody td:not([data-label]) {
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  .table-stack .num {
+    text-align: right;
+  }
+}
+
+/* Таблица ввода дня: на мобильных каждая строка — карточка с подписями над полями */
+@media (max-width: 991.98px) {
+  .entry-table thead {
+    display: none;
+  }
+
+  .entry-table,
+  .entry-table tbody,
+  .entry-table tr,
+  .entry-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .entry-table tbody tr {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+  }
+
+  .entry-table td {
+    border: 0;
+    padding: 0.25rem 0;
+  }
+
+  .entry-table td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-bottom: 0.1rem;
+  }
+
+  .entry-table td[data-label=""]::before {
+    content: none;
+  }
+}
+
+@media (min-width: 992px) {
+  .entry-table td {
+    vertical-align: middle;
+  }
+
+  .entry-table .form-select,
+  .entry-table .form-control {
+    font-size: 0.875rem;
+  }
+}
+
+/* Форма входа */
+.login-wrapper {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
 }

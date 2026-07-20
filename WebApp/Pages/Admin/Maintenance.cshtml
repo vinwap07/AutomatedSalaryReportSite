@@ -1,0 +1,59 @@
+@page
+@model WebApp.Pages.Admin.MaintenanceModel
+@{
+    ViewData["Title"] = "Сервис";
+}
+
+<h1 class="h3 mb-3">Сервис</h1>
+
+<div class="row g-3">
+    <div class="col-12 col-lg-5">
+        <div class="card">
+            <div class="card-header">Резервная копия</div>
+            <div class="card-body">
+                <p class="text-muted">
+                    Выгружает все данные (работники, техника, виды работ, журнал работ, учётные записи)
+                    одним JSON-файлом. Рекомендуется делать выгрузку регулярно и сохранять файл в надёжном месте.
+                </p>
+                <a class="btn btn-success" asp-page-handler="Dump">⬇ Скачать дамп базы данных</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-7">
+        <div class="card">
+            <div class="card-header">Логи действий</div>
+            <div class="card-body">
+                @if (Model.LogFiles.Count == 0)
+                {
+                    <p class="text-muted m-0">Логов пока нет. Они появятся после первых действий в системе.</p>
+                }
+                else
+                {
+                    <ul class="list-group mb-3">
+                        @foreach (var file in Model.LogFiles)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <span>📄 @file</span>
+                                <span class="d-flex gap-1">
+                                    <a class="btn btn-outline-primary btn-sm" asp-page="/Admin/Maintenance" asp-route-LogFile="@file">Просмотр</a>
+                                    <a class="btn btn-outline-secondary btn-sm" asp-page-handler="DownloadLog" asp-route-file="@file">Скачать</a>
+                                </span>
+                            </li>
+                        }
+                    </ul>
+                }
+
+                @if (Model.LogContent != null)
+                {
+                    <h3 class="h6">@Model.LogFile</h3>
+                    <pre class="border rounded bg-light p-2 small" style="max-height: 420px; overflow:auto">@Model.LogContent</pre>
+                }
+                else if (Model.LogFile != null)
+                {
+                    <div class="alert alert-warning py-2 m-0">Файл не найден.</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
