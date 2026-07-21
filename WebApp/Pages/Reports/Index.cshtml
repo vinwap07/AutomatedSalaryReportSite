@@ -193,7 +193,7 @@ else
                         <td data-label="Объём" class="num">
                             @if (log.WorkCost != null)
                             {
-                                @log.WorkCost.Volume.ToString("0.##") <span class="text-muted small">@log.WorkCost.UnitOfMeasure.GetDisplayName()</span>
+                                <span>@log.WorkCost.Volume.ToString("0.##") <span class="text-muted small">@log.WorkCost.UnitOfMeasure.GetDisplayName()</span></span>
                             }
                             else
                             {

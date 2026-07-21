@@ -125,14 +125,6 @@ public class AddDayModel(
             {
                 RowErrors.Add($"Строка {rowNumber}: выберите вид работы или причину отсутствия");
             }
-            if (row.WorkTypeId != null && row.ReasonForAbsenceId != null)
-            {
-                RowErrors.Add($"Строка {rowNumber}: укажите либо работу, либо причину отсутствия, но не оба поля сразу");
-            }
-            if (row.ReasonForAbsenceId != null && (row.WorkHours != null || row.Rate != null || row.Volume != null))
-            {
-                RowErrors.Add($"Строка {rowNumber}: для отсутствия не указываются часы, расценка и объём");
-            }
             if (row.Rate != null ^ row.Volume != null)
             {
                 RowErrors.Add($"Строка {rowNumber}: для расчёта суммы нужны и расценка, и объём");

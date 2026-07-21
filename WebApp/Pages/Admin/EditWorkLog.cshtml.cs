@@ -89,14 +89,6 @@ public class EditWorkLogModel(
         {
             Errors.Add("Выберите вид работы или причину отсутствия");
         }
-        if (WorkTypeId != null && ReasonForAbsenceId != null)
-        {
-            Errors.Add("Укажите либо работу, либо причину отсутствия, но не оба поля сразу");
-        }
-        if (ReasonForAbsenceId != null && (WorkHours != null || Rate != null || Volume != null))
-        {
-            Errors.Add("Для отсутствия не указываются часы, расценка и объём");
-        }
         if (Rate != null ^ Volume != null)
         {
             Errors.Add("Для расчёта суммы нужны и расценка, и объём");
