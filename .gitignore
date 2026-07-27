@@ -405,3 +405,6 @@ FodyWeavers.xsd
 
 # Текстовые логи действий приложения
 WebApp/logs/
+
+# Секреты для docker compose (шаблон — .env.example)
+.env

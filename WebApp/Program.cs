@@ -4,6 +4,7 @@ using Domain;
 using Domain.Dtos;
 using Domain.Entities;
 using Domain.Services.Abstractions;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using WebApp.Logging;
 using WebApp.Middlewares;
@@ -31,9 +32,19 @@ builder.Services.AddSingleton<ISessionStore, InMemorySessionStore>();
 builder.Services.AddScoped<ISessionService, SessionService>();
 builder.Services.AddSingleton<IAuditLogger, FileAuditLogger>();
 
+// Приложение работает за reverse-proxy (nginx): берем IP клиента и схему из заголовков X-Forwarded-*
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
 var app = builder.Build();
 
 await InitializeDatabaseAsync(app);
+
+app.UseForwardedHeaders();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

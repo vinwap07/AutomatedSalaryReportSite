@@ -1,0 +1,16 @@
+**/bin/
+**/obj/
+.git/
+.idea/
+.claude/
+.vs/
+old project/
+Web/
+WebApp/logs/
+*.xlsx
+*.md
+.env
+.env.example
+docker-compose.yml
+nginx/
+Dockerfile
