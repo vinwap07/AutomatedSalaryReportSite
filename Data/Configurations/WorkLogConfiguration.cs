@@ -20,6 +20,11 @@ public class WorkLogConfiguration : IEntityTypeConfiguration<WorkLog>
             .HasForeignKey(x => x.EmployeeId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder.HasOne(x => x.Equipment)
+            .WithMany()
+            .HasForeignKey(x => x.EquipmentId)
+            .OnDelete(DeleteBehavior.SetNull);
+
         builder.HasOne(x => x.WorkType)
             .WithMany()
             .HasForeignKey(x => x.WorkTypeId)

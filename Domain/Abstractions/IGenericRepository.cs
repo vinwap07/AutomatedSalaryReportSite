@@ -13,7 +13,7 @@ public interface IGenericRepository<TEntity, in TKey> where TEntity : class
     /// Получает все существующие сущности
     /// </summary>
     /// <param name="cancellationToken">Токен отмены операции</param>
-    /// <param name="includes">Пути навигационных свойств, которые нужно подгрузить (например "Employee.Equipment")</param>
+    /// <param name="includes">Пути навигационных свойств, которые нужно подгрузить (например "Employee.User")</param>
     /// <returns>Коллекция всех существующих сущностей</returns>
     Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default, params string[] includes);
     
@@ -32,7 +32,7 @@ public interface IGenericRepository<TEntity, in TKey> where TEntity : class
     /// <param name="page">Номер страницы</param>
     /// <param name="pageSize">Количество записей на странице</param>>
     /// <param name="cancellationToken">Токен отмены операции</param>
-    /// <param name="includes">Пути навигационных свойств, которые нужно подгрузить (например "Employee.Equipment")</param>
+    /// <param name="includes">Пути навигационных свойств, которые нужно подгрузить (например "Employee.User")</param>
     /// <returns>Коллекция найденных сущностей</returns>
     Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate, int page, int pageSize, CancellationToken cancellationToken = default, params string[] includes);
 

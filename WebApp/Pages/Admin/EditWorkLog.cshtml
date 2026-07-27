@@ -42,6 +42,16 @@
                     </select>
                 </div>
                 <div class="col-12">
+                    <label class="form-label">Техника</label>
+                    <select name="EquipmentId" class="form-select">
+                        <option value="">— без техники —</option>
+                        @foreach (var equipment in Model.EquipmentList)
+                        {
+                            <option value="@equipment.Id" selected="@(equipment.Id == Model.EquipmentId)">@equipment.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-12">
                     <label class="form-label">Вид работы</label>
                     <select name="WorkTypeId" class="form-select">
                         <option value="">— не выбрано —</option>

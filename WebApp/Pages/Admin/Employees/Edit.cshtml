@@ -29,16 +29,6 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Техника</label>
-                        <select name="EquipmentId" class="form-select">
-                            <option value="">— без техники —</option>
-                            @foreach (var equipment in Model.EquipmentList)
-                            {
-                                <option value="@equipment.Id" selected="@(equipment.Id == Model.EquipmentId)">@equipment.Name</option>
-                            }
-                        </select>
-                    </div>
-                    <div class="mb-3">
                         <label class="form-label">Комментарий</label>
                         <input name="Comment" value="@Model.Comment" class="form-control" />
                     </div>

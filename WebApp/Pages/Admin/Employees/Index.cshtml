@@ -26,17 +26,7 @@
                         }
                     </select>
                 </div>
-                <div class="col-12 col-md-3">
-                    <label class="form-label mb-1">Техника</label>
-                    <select name="EquipmentId" class="form-select">
-                        <option value="">— без техники —</option>
-                        @foreach (var equipment in Model.EquipmentList)
-                        {
-                            <option value="@equipment.Id">@equipment.Name</option>
-                        }
-                    </select>
-                </div>
-                <div class="col-12 col-md-2">
+                <div class="col-12 col-md-5">
                     <label class="form-label mb-1">Комментарий</label>
                     <input name="Comment" class="form-control" />
                 </div>
@@ -60,7 +50,6 @@ else
             <tr>
                 <th>ФИО</th>
                 <th>Специальность</th>
-                <th>Техника</th>
                 <th>Учётная запись</th>
                 <th>Комментарий</th>
                 <th></th>
@@ -72,7 +61,6 @@ else
                 <tr>
                     <td data-label="ФИО" class="fw-semibold">@employee.Name</td>
                     <td data-label="Специальность">@employee.Specialty.GetDisplayName()</td>
-                    <td data-label="Техника">@(string.IsNullOrEmpty(employee.EquipmentName) ? "—" : employee.EquipmentName)</td>
                     <td data-label="Учётная запись">
                         @if (employee.UserId != null)
                         {

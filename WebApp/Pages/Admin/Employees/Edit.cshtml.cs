@@ -15,7 +15,6 @@ namespace WebApp.Pages.Admin.Employees;
 /// </summary>
 public class EditModel(
     IEmployeeService employeeService,
-    IEquipmentService equipmentService,
     IUserService userService,
     IAuditLogger auditLogger
     ) : PageModel
@@ -30,9 +29,6 @@ public class EditModel(
     public Specialty Specialty { get; set; }
 
     [BindProperty]
-    public Guid? EquipmentId { get; set; }
-
-    [BindProperty]
     public string? Comment { get; set; }
 
     [BindProperty]
@@ -42,7 +38,6 @@ public class EditModel(
     public string? AccountPassword { get; set; }
 
     public EmployeeDetailsDto? Employee { get; private set; }
-    public List<Domain.Entities.Equipment> EquipmentList { get; private set; } = [];
 
     public async Task<IActionResult> OnGetAsync(CancellationToken cancellationToken)
     {
@@ -51,7 +46,6 @@ public class EditModel(
             await LoadAsync(cancellationToken);
             Name = Employee!.Name;
             Specialty = Employee.Specialty;
-            EquipmentId = Employee.EquipmentId;
             Comment = Employee.Comment;
             return Page();
         }
@@ -77,7 +71,6 @@ public class EditModel(
                 Id = Id,
                 Name = Name.Trim(),
                 Specialty = Specialty,
-                EquipmentId = EquipmentId,
                 Comment = string.IsNullOrWhiteSpace(Comment) ? null : Comment.Trim(),
             }, cancellationToken);
 
@@ -227,7 +220,5 @@ public class EditModel(
     private async Task LoadAsync(CancellationToken cancellationToken)
     {
         Employee = await employeeService.GetByIdAsync(Id, cancellationToken);
-        EquipmentList = (await equipmentService.GetAllAsync(cancellationToken))
-            .OrderBy(e => e.Name).ToList();
     }
 }

@@ -16,7 +16,7 @@ public class WorkLogService(
     private static readonly string[] Includes =
     [
         nameof(WorkLog.Employee),
-        $"{nameof(WorkLog.Employee)}.{nameof(Employee.Equipment)}",
+        nameof(WorkLog.Equipment),
         nameof(WorkLog.WorkType),
         nameof(WorkLog.ReasonForAbsence),
     ];

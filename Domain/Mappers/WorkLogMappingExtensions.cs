@@ -36,6 +36,7 @@ public static class WorkLogMappingExtensions
         {
             workLog.Date = request.Date.Value;
         }
+        workLog.EquipmentId = request.EquipmentId;
         workLog.WorkTypeId = request.WorkTypeId;
         workLog.WorkHours = request.WorkHours;
         workLog.WorkCost = request.WorkCost;

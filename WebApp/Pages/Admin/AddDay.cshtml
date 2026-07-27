@@ -22,6 +22,15 @@
                     }
                 </select>
             </td>
+            <td data-label="Техника">
+                <select name="Rows[@index].EquipmentId" class="form-select form-select-sm">
+                    <option value="">— техника —</option>
+                    @foreach (var equipment in Model.EquipmentList)
+                    {
+                        <option value="@equipment.Id" selected="@(equipment.Id == row.EquipmentId)">@equipment.Name</option>
+                    }
+                </select>
+            </td>
             <td data-label="Вид работы">
                 <select name="Rows[@index].WorkTypeId" class="form-select form-select-sm">
                     <option value="">— вид работы —</option>
@@ -122,6 +131,7 @@
             <tr>
                 <th style="width:1%"></th>
                 <th style="min-width:180px">Работник</th>
+                <th style="min-width:140px">Техника</th>
                 <th style="min-width:180px">Вид работы</th>
                 <th style="width:80px">Часы</th>
                 <th style="width:100px">Расценка</th>

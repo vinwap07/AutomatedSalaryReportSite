@@ -33,10 +33,6 @@ namespace Data.Migrations
                         .HasColumnType("text")
                         .HasColumnName("comment");
 
-                    b.Property<Guid?>("EquipmentId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("equipment_id");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -55,9 +51,6 @@ namespace Data.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_employees");
-
-                    b.HasIndex("EquipmentId")
-                        .HasDatabaseName("ix_employees_equipment_id");
 
                     b.HasIndex("UserId")
                         .IsUnique()
@@ -162,6 +155,10 @@ namespace Data.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("employee_id");
 
+                    b.Property<Guid?>("EquipmentId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("equipment_id");
+
                     b.Property<Guid?>("ReasonForAbsenceId")
                         .HasColumnType("uuid")
                         .HasColumnName("reason_for_absence_id");
@@ -182,6 +179,9 @@ namespace Data.Migrations
 
                     b.HasIndex("EmployeeId")
                         .HasDatabaseName("ix_work_logs_employee_id");
+
+                    b.HasIndex("EquipmentId")
+                        .HasDatabaseName("ix_work_logs_equipment_id");
 
                     b.HasIndex("ReasonForAbsenceId")
                         .HasDatabaseName("ix_work_logs_reason_for_absence_id");
@@ -213,19 +213,11 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Domain.Entities.Employee", b =>
                 {
-                    b.HasOne("Domain.Entities.Equipment", "Equipment")
-                        .WithMany()
-                        .HasForeignKey("EquipmentId")
-                        .OnDelete(DeleteBehavior.SetNull)
-                        .HasConstraintName("fk_employees_equipments_equipment_id");
-
                     b.HasOne("Domain.Entities.User", "User")
                         .WithOne()
                         .HasForeignKey("Domain.Entities.Employee", "UserId")
                         .OnDelete(DeleteBehavior.SetNull)
                         .HasConstraintName("fk_employees_users_user_id");
-
-                    b.Navigation("Equipment");
 
                     b.Navigation("User");
                 });
@@ -238,6 +230,12 @@ namespace Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_work_logs_employees_employee_id");
+
+                    b.HasOne("Domain.Entities.Equipment", "Equipment")
+                        .WithMany()
+                        .HasForeignKey("EquipmentId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_work_logs_equipments_equipment_id");
 
                     b.HasOne("Domain.Entities.ReasonForAbsence", "ReasonForAbsence")
                         .WithMany()
@@ -283,6 +281,8 @@ namespace Data.Migrations
                         });
 
                     b.Navigation("Employee");
+
+                    b.Navigation("Equipment");
 
                     b.Navigation("ReasonForAbsence");
 

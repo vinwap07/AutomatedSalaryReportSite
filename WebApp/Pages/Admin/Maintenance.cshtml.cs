@@ -53,7 +53,7 @@ public class MaintenanceModel(
                 .Select(u => new { u.Id, u.Login, u.PasswordHash, u.Role })
                 .ToListAsync(cancellationToken),
             Employees = await dbContext.Employees.AsNoTracking()
-                .Select(e => new { e.Id, e.Name, e.Specialty, e.Comment, e.EquipmentId, e.UserId })
+                .Select(e => new { e.Id, e.Name, e.Specialty, e.Comment, e.UserId })
                 .ToListAsync(cancellationToken),
             Equipment = await dbContext.Equipments.AsNoTracking()
                 .Select(e => new { e.Id, e.Name, e.HasTracker })
@@ -70,6 +70,7 @@ public class MaintenanceModel(
                     w.Id,
                     w.EmployeeId,
                     w.Date,
+                    w.EquipmentId,
                     w.WorkTypeId,
                     w.WorkHours,
                     Rate = w.WorkCost != null ? (decimal?)w.WorkCost.Rate : null,

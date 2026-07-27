@@ -24,6 +24,16 @@ public class WorkLog
     public Employee Employee { get; set; }
     
     /// <summary>
+    /// Уникальный идентификатор техники, на которой сотрудник работал в этот день
+    /// </summary>
+    public Guid? EquipmentId { get; set; }
+
+    /// <summary>
+    /// Техника, на которой сотрудник работал в этот день
+    /// </summary>
+    public Equipment? Equipment { get; set; }
+
+    /// <summary>
     /// Уникальный идентификатор типа выполненной работы
     /// </summary>
     public Guid? WorkTypeId { get; set; }

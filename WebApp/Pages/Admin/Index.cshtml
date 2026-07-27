@@ -117,7 +117,7 @@ else
                 {
                     <tr>
                         <td data-label="Работник">@log.Employee.Name</td>
-                        <td data-label="Техника" class="text-muted">@(string.IsNullOrEmpty(log.Employee.EquipmentName) ? "—" : log.Employee.EquipmentName)</td>
+                        <td data-label="Техника" class="text-muted">@(log.Equipment?.Name ?? "—")</td>
                         <td data-label="Работа">
                             @if (log.ReasonForAbsence != null)
                             {

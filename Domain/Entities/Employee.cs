@@ -36,16 +36,6 @@ public class Employee
     /// Комментарий по сотруднику
     /// </summary>
     public string? Comment { get; set; }
-    
-    /// <summary>
-    /// Уникальный идентификатор техники, с которой работает сотрудник
-    /// </summary>
-    public Guid? EquipmentId { get; set; }
-    
-    /// <summary>
-    /// Техника, с которой работает сотрудник
-    /// </summary>
-    public Equipment? Equipment { get; set; }
 }
 
 /// <summary>

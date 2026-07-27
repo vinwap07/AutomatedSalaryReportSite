@@ -14,7 +14,6 @@ namespace WebApp.Pages.Admin.Employees;
 /// </summary>
 public class IndexModel(
     IEmployeeService employeeService,
-    IEquipmentService equipmentService,
     IAuditLogger auditLogger
     ) : PageModel
 {
@@ -25,13 +24,9 @@ public class IndexModel(
     public Specialty Specialty { get; set; }
 
     [BindProperty]
-    public Guid? EquipmentId { get; set; }
-
-    [BindProperty]
     public string? Comment { get; set; }
 
     public List<EmployeeListItemDto> Employees { get; private set; } = [];
-    public List<Domain.Entities.Equipment> EquipmentList { get; private set; } = [];
 
     public async Task OnGetAsync(CancellationToken cancellationToken)
     {
@@ -50,7 +45,6 @@ public class IndexModel(
         {
             Name = Name.Trim(),
             Specialty = Specialty,
-            EquipmentId = EquipmentId,
             Comment = string.IsNullOrWhiteSpace(Comment) ? null : Comment.Trim(),
         }, cancellationToken);
 
@@ -63,8 +57,6 @@ public class IndexModel(
     private async Task LoadAsync(CancellationToken cancellationToken)
     {
         Employees = (await employeeService.GetAllAsync(cancellationToken))
-            .OrderBy(e => e.Name).ToList();
-        EquipmentList = (await equipmentService.GetAllAsync(cancellationToken))
             .OrderBy(e => e.Name).ToList();
     }
 }

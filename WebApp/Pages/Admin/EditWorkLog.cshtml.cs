@@ -16,6 +16,7 @@ namespace WebApp.Pages.Admin;
 public class EditWorkLogModel(
     IWorkLogService workLogService,
     IEmployeeService employeeService,
+    IEquipmentService equipmentService,
     IWorkTypeService workTypeService,
     IReasonForAbsenceService reasonForAbsenceService,
     IAuditLogger auditLogger
@@ -29,6 +30,9 @@ public class EditWorkLogModel(
 
     [BindProperty]
     public Guid EmployeeId { get; set; }
+
+    [BindProperty]
+    public Guid? EquipmentId { get; set; }
 
     [BindProperty]
     public Guid? WorkTypeId { get; set; }
@@ -49,6 +53,7 @@ public class EditWorkLogModel(
     public Guid? ReasonForAbsenceId { get; set; }
 
     public List<EmployeeListItemDto> Employees { get; private set; } = [];
+    public List<Domain.Entities.Equipment> EquipmentList { get; private set; } = [];
     public List<WorkType> WorkTypes { get; private set; } = [];
     public List<ReasonForAbsence> Reasons { get; private set; } = [];
     public List<string> Errors { get; } = [];
@@ -62,6 +67,7 @@ public class EditWorkLogModel(
             var log = await workLogService.GetByIdAsync(Id, cancellationToken);
             Date = log.Date;
             EmployeeId = log.Employee.Id;
+            EquipmentId = log.Equipment?.Id;
             WorkTypeId = log.WorkType?.Id;
             WorkHours = log.WorkHours;
             Rate = log.WorkCost?.Rate;
@@ -106,6 +112,7 @@ public class EditWorkLogModel(
                 Id = Id,
                 EmployeeId = EmployeeId,
                 Date = Date,
+                EquipmentId = EquipmentId,
                 WorkTypeId = WorkTypeId,
                 WorkHours = WorkHours,
                 WorkCost = Rate != null && Volume != null ? new WorkCost(Rate.Value, Volume.Value, Unit) : null,
@@ -153,6 +160,8 @@ public class EditWorkLogModel(
     private async Task LoadListsAsync(CancellationToken cancellationToken)
     {
         Employees = (await employeeService.GetAllAsync(cancellationToken))
+            .OrderBy(e => e.Name).ToList();
+        EquipmentList = (await equipmentService.GetAllAsync(cancellationToken))
             .OrderBy(e => e.Name).ToList();
         WorkTypes = (await workTypeService.GetAllAsync(cancellationToken))
             .OrderBy(w => w.Name).ToList();

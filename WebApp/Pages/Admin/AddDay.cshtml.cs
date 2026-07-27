@@ -16,6 +16,7 @@ namespace WebApp.Pages.Admin;
 public class AddDayModel(
     IWorkLogService workLogService,
     IEmployeeService employeeService,
+    IEquipmentService equipmentService,
     IWorkTypeService workTypeService,
     IReasonForAbsenceService reasonForAbsenceService,
     IAuditLogger auditLogger
@@ -29,6 +30,7 @@ public class AddDayModel(
     public class RowInput
     {
         public Guid? EmployeeId { get; set; }
+        public Guid? EquipmentId { get; set; }
         public Guid? WorkTypeId { get; set; }
         public int? WorkHours { get; set; }
         public decimal? Rate { get; set; }
@@ -37,7 +39,7 @@ public class AddDayModel(
         public Guid? ReasonForAbsenceId { get; set; }
 
         public bool IsEmpty =>
-            EmployeeId == null && WorkTypeId == null && WorkHours == null &&
+            EmployeeId == null && EquipmentId == null && WorkTypeId == null && WorkHours == null &&
             Rate == null && Volume == null && ReasonForAbsenceId == null;
     }
 
@@ -48,6 +50,7 @@ public class AddDayModel(
     public List<RowInput> Rows { get; set; } = [];
 
     public List<EmployeeListItemDto> Employees { get; private set; } = [];
+    public List<Domain.Entities.Equipment> EquipmentList { get; private set; } = [];
     public List<WorkType> WorkTypes { get; private set; } = [];
     public List<ReasonForAbsence> Reasons { get; private set; } = [];
 
@@ -85,6 +88,7 @@ public class AddDayModel(
                     .Select(l => new RowInput
                     {
                         EmployeeId = l.Employee.Id,
+                        EquipmentId = l.Equipment?.Id,
                         WorkTypeId = l.WorkType?.Id,
                         WorkHours = l.WorkHours,
                         Rate = l.WorkCost?.Rate,
@@ -150,6 +154,7 @@ public class AddDayModel(
             {
                 EmployeeId = row.EmployeeId!.Value,
                 Date = Date,
+                EquipmentId = row.EquipmentId,
                 WorkTypeId = row.WorkTypeId,
                 WorkHours = row.WorkHours,
                 WorkCost = workCost,
@@ -175,6 +180,8 @@ public class AddDayModel(
     private async Task LoadListsAsync(CancellationToken cancellationToken)
     {
         Employees = (await employeeService.GetAllAsync(cancellationToken))
+            .OrderBy(e => e.Name).ToList();
+        EquipmentList = (await equipmentService.GetAllAsync(cancellationToken))
             .OrderBy(e => e.Name).ToList();
         WorkTypes = (await workTypeService.GetAllAsync(cancellationToken))
             .OrderBy(w => w.Name).ToList();

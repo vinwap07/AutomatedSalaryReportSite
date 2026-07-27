@@ -24,10 +24,5 @@ public class EmployeeConfiguration: IEntityTypeConfiguration<Employee>
             .WithOne()
             .HasForeignKey<Employee>(x => x.UserId)
             .OnDelete(DeleteBehavior.SetNull);
-
-        builder.HasOne(x => x.Equipment)
-            .WithMany()
-            .HasForeignKey(x => x.EquipmentId)
-            .OnDelete(DeleteBehavior.SetNull);
     }
 }

@@ -7,6 +7,7 @@ public record WorkLogDetailsDto
 {
     public Guid Id { get; init; }
     public EmployeeDetailsDto Employee { get; init; }
+    public Equipment? Equipment { get; init; }
     public WorkType? WorkType { get; init; }
     public DateOnly Date { get; init; }
     public int? WorkHours { get; init; }
@@ -17,7 +18,8 @@ public record WorkLogDetailsDto
 public record WorkLogListItemDto
 {
     public Guid Id { get; init; }
-    public EmployeeListItemDto Employee { get; init; } = null!; 
+    public EmployeeListItemDto Employee { get; init; } = null!;
+    public Equipment? Equipment { get; init; }
     public WorkType? WorkType { get; init; }
     public DateOnly Date { get; init; }
     public int? WorkHours { get; init; }
@@ -29,6 +31,7 @@ public record CreateWorkLogRequest
 {
     public Guid EmployeeId { get; set; }
     public DateOnly Date { get; set; }
+    public Guid? EquipmentId { get; set; }
     public Guid? WorkTypeId { get; set; }
     public int? WorkHours { get; set; }
     public WorkCost? WorkCost { get; set; }
@@ -40,6 +43,7 @@ public record UpdateWorkLogRequest
     public Guid Id { get; set; }
     public Guid? EmployeeId { get; set; }
     public DateOnly? Date { get; set; }
+    public Guid? EquipmentId { get; set; }
     public Guid? WorkTypeId { get; set; }
     public int? WorkHours { get; set; }
     public WorkCost? WorkCost { get; set; }

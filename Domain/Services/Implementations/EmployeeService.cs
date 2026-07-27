@@ -15,7 +15,6 @@ public class EmployeeService(
 {
     private static readonly string[] Includes =
     [
-        nameof(Employee.Equipment),
         nameof(Employee.User),
     ];
 
@@ -87,7 +86,6 @@ public class EmployeeService(
         var employees = await employeeRepository.FindAsync(e =>
                 (filters.Name == null || e.Name.Contains(filters.Name)) &&
                 (filters.Specialty == null || e.Specialty == filters.Specialty) &&
-                (filters.EquipmentId == null || e.EquipmentId == filters.EquipmentId) &&
                 (filters.UserId == null || e.UserId == filters.UserId),
             filters.Page,
             filters.PageSize,
