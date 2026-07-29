@@ -1,0 +1,7 @@
+# Shell-скрипты и Dockerfile выполняются на Linux — переводы строк только LF,
+# иначе на сервере bash падает с ошибкой вида "\r: command not found"
+*.sh text eol=lf
+Dockerfile text eol=lf
+docker-compose.yml text eol=lf
+nginx/*.conf text eol=lf
+.env.example text eol=lf

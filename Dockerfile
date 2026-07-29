@@ -5,12 +5,15 @@ WORKDIR /src
 COPY Domain/Domain.csproj Domain/
 COPY Data/Data.csproj Data/
 COPY WebApp/WebApp.csproj WebApp/
-RUN dotnet restore WebApp/WebApp.csproj
+RUN dotnet restore WebApp/WebApp.csproj --disable-parallel
 
 COPY Domain/ Domain/
 COPY Data/ Data/
 COPY WebApp/ WebApp/
-RUN dotnet publish WebApp/WebApp.csproj -c Release -o /app/publish /p:UseAppHost=false
+# /m:1 и отключение shared compilation снижают пик потребления памяти:
+# сборка идет прямо на VPS, где всего 2 ГБ RAM
+RUN dotnet publish WebApp/WebApp.csproj -c Release -o /app/publish \
+    /p:UseAppHost=false /p:UseSharedCompilation=false /m:1
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app

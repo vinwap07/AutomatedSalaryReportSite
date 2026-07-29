@@ -5,7 +5,7 @@ services:
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-my_employee_db}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-salary_pg_pwd}
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -24,16 +24,8 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       TZ: ${TZ:-Europe/Moscow}
-      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=${POSTGRES_DB:-my_employee_db};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD}"
-      # Фермы и их администраторы. Идентификаторы ферм менять нельзя — к ним привязаны все данные
-      Farms__0__Id: ${FARM1_ID:-11111111-1111-1111-1111-111111111111}
-      Farms__0__Name: ${FARM1_NAME:-Ферма №1}
-      Farms__0__AdminLogin: ${FARM1_ADMIN_LOGIN:-admin}
-      Farms__0__AdminPassword: ${FARM1_ADMIN_PASSWORD:?FARM1_ADMIN_PASSWORD is required}
-      Farms__1__Id: ${FARM2_ID:-22222222-2222-2222-2222-222222222222}
-      Farms__1__Name: ${FARM2_NAME:-Ферма №2}
-      Farms__1__AdminLogin: ${FARM2_ADMIN_LOGIN:-admin2}
-      Farms__1__AdminPassword: ${FARM2_ADMIN_PASSWORD:?FARM2_ADMIN_PASSWORD is required}
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=${POSTGRES_DB:-my_employee_db};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-salary_pg_pwd}"
+      # Фермы и их администраторы задаются в WebApp/appsettings.json
     volumes:
       - applogs:/app/logs
       - dpkeys:/home/app/.aspnet/DataProtection-Keys

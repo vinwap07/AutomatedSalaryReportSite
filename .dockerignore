@@ -14,3 +14,5 @@ WebApp/logs/
 docker-compose.yml
 nginx/
 Dockerfile
+deploy.sh
+.gitattributes
