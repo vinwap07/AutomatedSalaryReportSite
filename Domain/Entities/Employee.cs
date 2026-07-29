@@ -5,13 +5,16 @@ namespace Domain.Entities;
 /// <summary>
 /// Работник
 /// </summary>
-public class Employee
+public class Employee : IFarmScoped
 {
     /// <summary>
     /// Уникальный идентификатор записи
     /// </summary>
     public Guid Id { get; set; }
-    
+
+    /// <inheritdoc />
+    public Guid FarmId { get; set; }
+
     /// <summary>
     /// Имя сотрудника
     /// </summary>

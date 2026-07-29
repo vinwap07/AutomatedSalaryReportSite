@@ -42,13 +42,15 @@ public class MaintenanceModel(
     }
 
     /// <summary>
-    /// Выгружает все таблицы базы данных одним JSON-файлом
+    /// Выгружает данные текущей фермы одним JSON-файлом
     /// </summary>
     public async Task<IActionResult> OnGetDumpAsync(CancellationToken cancellationToken)
     {
+        var session = HttpContext.GetSessionData();
         var dump = new
         {
             CreatedAt = DateTimeOffset.Now,
+            Farm = new { Id = session?.FarmId, Name = session?.FarmName },
             Users = await dbContext.Users.AsNoTracking()
                 .Select(u => new { u.Id, u.Login, u.PasswordHash, u.Role })
                 .ToListAsync(cancellationToken),
@@ -81,7 +83,7 @@ public class MaintenanceModel(
                 .ToListAsync(cancellationToken),
         };
 
-        var login = HttpContext.GetSessionData()?.Login ?? "?";
+        var login = session?.Login ?? "?";
         await auditLogger.LogAsync(login, "Выгружен дамп базы данных",
             $"записей в журнале: {dump.WorkLogs.Count}, работников: {dump.Employees.Count}");
 

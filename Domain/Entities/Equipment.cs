@@ -3,13 +3,16 @@ namespace Domain.Entities;
 /// <summary>
 /// Техника
 /// </summary>
-public class Equipment
+public class Equipment : IFarmScoped
 {
     /// <summary>
     /// Уникальный идентификатор записи
     /// </summary>
     public Guid Id { get; set; }
-    
+
+    /// <inheritdoc />
+    public Guid FarmId { get; set; }
+
     /// <summary>
     /// Название техники
     /// </summary>

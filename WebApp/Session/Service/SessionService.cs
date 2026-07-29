@@ -31,6 +31,8 @@ public class SessionService(
             UserId = user.Id,
             Login = user.Login,
             Role = user.Role,
+            FarmId = user.FarmId,
+            FarmName = user.FarmName ?? string.Empty,
             ExpiresAt = expiresAt,
         };
         

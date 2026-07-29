@@ -1,3 +1,4 @@
+using Domain.Abstractions;
 using Domain.Entities;
 using WebApp.Session.Service;
 
@@ -25,13 +26,16 @@ public class SessionAuthMiddleware(RequestDelegate next)
         "/WebApp.styles.css",
     ];
 
-    public async Task InvokeAsync(HttpContext context, ISessionService sessionService)
+    public async Task InvokeAsync(HttpContext context, ISessionService sessionService, IFarmContext farmContext)
     {
         var sessionData = await sessionService.GetSessionDataAsync(context.RequestAborted);
         if (sessionData != null)
         {
             context.Items[SessionItemKey] = sessionData;
         }
+
+        // Все запросы к данным в рамках запроса ограничиваются фермой текущего пользователя
+        farmContext.SetFarm(sessionData?.FarmId);
 
         var path = context.Request.Path;
         if (IsPublicPath(path))

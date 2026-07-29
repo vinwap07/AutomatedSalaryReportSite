@@ -24,5 +24,12 @@ public class EmployeeConfiguration: IEntityTypeConfiguration<Employee>
             .WithOne()
             .HasForeignKey<Employee>(x => x.UserId)
             .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasIndex(x => x.FarmId);
+
+        builder.HasOne<Farm>()
+            .WithMany()
+            .HasForeignKey(x => x.FarmId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

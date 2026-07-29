@@ -6,13 +6,16 @@ namespace Domain.Entities;
 /// <summary>
 /// Запись о выполненной работе 
 /// </summary>
-public class WorkLog
+public class WorkLog : IFarmScoped
 {
     /// <summary>
     /// Уникальный идентификатор записи
     /// </summary>
     public Guid Id { get; set; }
-    
+
+    /// <inheritdoc />
+    public Guid FarmId { get; set; }
+
     /// <summary>
     /// Уникальный идентификатор сотрудника, выполнившего работу
     /// </summary>

@@ -1,11 +1,13 @@
 using System.Globalization;
 using Data;
 using Domain;
+using Domain.Abstractions;
 using Domain.Dtos;
 using Domain.Entities;
 using Domain.Services.Abstractions;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
+using WebApp.Farms;
 using WebApp.Logging;
 using WebApp.Middlewares;
 using WebApp.ModelBinding;
@@ -22,6 +24,9 @@ var builder = Microsoft.AspNetCore.Builder.WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages()
     .AddMvcOptions(options => options.ModelBinderProviders.Insert(0, new FlexibleDecimalModelBinderProvider()));
+
+// Регистрируется до AddData: контекст базы данных фильтрует записи по ферме текущего пользователя
+builder.Services.AddScoped<IFarmContext, FarmContext>();
 
 builder.Services.AddData(builder.Configuration);
 builder.Services.AddDomain(builder.Configuration);
@@ -69,7 +74,7 @@ app.MapRazorPages()
 app.Run();
 return;
 
-// Применяет миграции и создает администратора по умолчанию, если пользователей еще нет
+// Применяет миграции и создает описанные в конфигурации фермы вместе с их администраторами
 static async Task InitializeDatabaseAsync(Microsoft.AspNetCore.Builder.WebApplication app)
 {
     using var scope = app.Services.CreateScope();
@@ -77,18 +82,50 @@ static async Task InitializeDatabaseAsync(Microsoft.AspNetCore.Builder.WebApplic
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     await dbContext.Database.MigrateAsync();
 
-    var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
-    var users = await userService.GetAllAsync();
-    if (!users.Any())
+    var farms = app.Configuration.GetSection(FarmSeedOptions.SectionName).Get<List<FarmSeedOptions>>() ?? [];
+    if (farms.Count == 0)
     {
-        var login = app.Configuration["DefaultAdmin:Login"] ?? "admin";
-        var password = app.Configuration["DefaultAdmin:Password"] ?? "admin";
+        app.Logger.LogWarning("В конфигурации не описано ни одной фермы (секция '{Section}')", FarmSeedOptions.SectionName);
+        return;
+    }
+
+    var farmService = scope.ServiceProvider.GetRequiredService<IFarmService>();
+    var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
+
+    // Инициализация выполняется без контекста фермы, поэтому видны учетные записи всех ферм
+    var logins = (await userService.GetAllAsync())
+        .Select(u => u.Login)
+        .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+    foreach (var farm in farms)
+    {
+        if (farm.Id == Guid.Empty || string.IsNullOrWhiteSpace(farm.Name))
+        {
+            throw new InvalidOperationException(
+                $"Некорректное описание фермы в конфигурации '{FarmSeedOptions.SectionName}': нужны Id и Name");
+        }
+
+        await farmService.EnsureAsync(farm.Id, farm.Name.Trim());
+
+        var login = farm.AdminLogin.Trim();
+        if (string.IsNullOrEmpty(login) || string.IsNullOrEmpty(farm.AdminPassword))
+        {
+            throw new InvalidOperationException(
+                $"Для фермы '{farm.Name}' не заданы логин и пароль администратора");
+        }
+
+        if (!logins.Add(login))
+        {
+            continue;
+        }
+
         await userService.CreateAsync(new CreateUserRequest
         {
             Login = login,
-            Password = password,
+            Password = farm.AdminPassword,
             Role = Role.Admin,
+            FarmId = farm.Id,
         });
-        app.Logger.LogInformation("Создан администратор по умолчанию с логином '{Login}'", login);
+        app.Logger.LogInformation("Создан администратор '{Login}' фермы '{Farm}'", login, farm.Name);
     }
 }

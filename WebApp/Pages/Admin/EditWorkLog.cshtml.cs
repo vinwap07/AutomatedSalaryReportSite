@@ -100,6 +100,24 @@ public class EditWorkLogModel(
             Errors.Add("Для расчёта суммы нужны и расценка, и объём");
         }
 
+        // Списки загружены с учетом фермы: чужие записи в форму не попадут
+        if (EmployeeId != Guid.Empty && Employees.All(e => e.Id != EmployeeId))
+        {
+            Errors.Add("Работник не найден");
+        }
+        if (EquipmentId != null && EquipmentList.All(e => e.Id != EquipmentId))
+        {
+            Errors.Add("Техника не найдена");
+        }
+        if (WorkTypeId != null && WorkTypes.All(w => w.Id != WorkTypeId))
+        {
+            Errors.Add("Вид работы не найден");
+        }
+        if (ReasonForAbsenceId != null && Reasons.All(r => r.Id != ReasonForAbsenceId))
+        {
+            Errors.Add("Причина отсутствия не найдена");
+        }
+
         if (Errors.Count > 0)
         {
             return Page();

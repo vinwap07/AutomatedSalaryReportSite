@@ -14,10 +14,16 @@ public class AuthService(
     IGenericRepository<User, Guid> userRepository
     ) : IAuthService
 {
+    private static readonly string[] Includes =
+    [
+        nameof(User.Farm),
+    ];
+
     /// <inheritdoc />
     public async Task<UserDetailsDto> LoginAsync(LoginData loginData, CancellationToken cancellationToken = default)
     {
-        var users = (await userRepository.FindAsync(user => user.Login == loginData.Username, 1, 1, cancellationToken))
+        // Вход выполняется без контекста фермы: пользователь ищется среди учетных записей всех ферм
+        var users = (await userRepository.FindAsync(user => user.Login == loginData.Username, 1, 1, cancellationToken, Includes))
             .ToList();
         if (users.Count == 0)
         {

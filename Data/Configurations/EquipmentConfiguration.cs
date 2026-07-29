@@ -18,5 +18,12 @@ public class EquipmentConfiguration : IEntityTypeConfiguration<Equipment>
         
         builder.Property(x => x.HasTracker)
             .HasDefaultValue(false);
+
+        builder.HasIndex(x => x.FarmId);
+
+        builder.HasOne<Farm>()
+            .WithMany()
+            .HasForeignKey(x => x.FarmId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

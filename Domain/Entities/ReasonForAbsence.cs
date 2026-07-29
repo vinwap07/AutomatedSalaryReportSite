@@ -3,13 +3,16 @@ namespace Domain.Entities;
 /// <summary>
 /// Причина отсутствия сотрудника на работе
 /// </summary>
-public class ReasonForAbsence
+public class ReasonForAbsence : IFarmScoped
 {
     /// <summary>
     /// Уникальный идентификатор записи
     /// </summary>
     public Guid Id { get; set; }
-    
+
+    /// <inheritdoc />
+    public Guid FarmId { get; set; }
+
     /// <summary>
     /// Причина отсутствия
     /// </summary>

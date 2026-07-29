@@ -19,8 +19,9 @@ public class GenericRepository<TEntity, TKey>(AppDbContext dbContext)
     /// <inheritdoc />
     public async Task<TEntity?> GetByIdAsync(TKey id, CancellationToken cancellationToken = default)
     {
+        // Обычный запрос вместо Find: так к поиску по ключу применяются глобальные фильтры (в том числе по ферме)
         return await dbContext.Set<TEntity>()
-            .FindAsync([id], cancellationToken);
+            .FirstOrDefaultAsync(ByPrimaryKey(id), cancellationToken);
     }
 
     /// <inheritdoc />
@@ -57,4 +58,24 @@ public class GenericRepository<TEntity, TKey>(AppDbContext dbContext)
     {
         return includes.Aggregate(query, (current, include) => current.Include(include));
     }
+
+    /// <summary>
+    /// Строит условие "первичный ключ сущности равен указанному значению"
+    /// </summary>
+    private static Expression<Func<TEntity, bool>> ByPrimaryKey(TKey id)
+    {
+        var entity = Expression.Parameter(typeof(TEntity), "e");
+        var key = Expression.Call(
+            typeof(EF),
+            nameof(EF.Property),
+            [typeof(TKey)],
+            entity,
+            Expression.Constant("Id"));
+        // Значение оборачивается в объект, чтобы EF Core подставил его параметром запроса, а не константой
+        var value = Expression.Property(Expression.Constant(new KeyHolder(id)), nameof(KeyHolder.Value));
+
+        return Expression.Lambda<Func<TEntity, bool>>(Expression.Equal(key, value), entity);
+    }
+
+    private sealed record KeyHolder(TKey Value);
 }

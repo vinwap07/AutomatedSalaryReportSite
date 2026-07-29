@@ -33,6 +33,10 @@ namespace Data.Migrations
                         .HasColumnType("text")
                         .HasColumnName("comment");
 
+                    b.Property<Guid>("FarmId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("farm_id");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -52,6 +56,9 @@ namespace Data.Migrations
                     b.HasKey("Id")
                         .HasName("pk_employees");
 
+                    b.HasIndex("FarmId")
+                        .HasDatabaseName("ix_employees_farm_id");
+
                     b.HasIndex("UserId")
                         .IsUnique()
                         .HasDatabaseName("ix_employees_user_id");
@@ -65,6 +72,10 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
+
+                    b.Property<Guid>("FarmId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("farm_id");
 
                     b.Property<bool>("HasTracker")
                         .ValueGeneratedOnAdd()
@@ -81,10 +92,13 @@ namespace Data.Migrations
                     b.HasKey("Id")
                         .HasName("pk_equipments");
 
+                    b.HasIndex("FarmId")
+                        .HasDatabaseName("ix_equipments_farm_id");
+
                     b.ToTable("equipments", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Entities.ReasonForAbsence", b =>
+            modelBuilder.Entity("Domain.Entities.Farm", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -98,7 +112,33 @@ namespace Data.Migrations
                         .HasColumnName("name");
 
                     b.HasKey("Id")
+                        .HasName("pk_farms");
+
+                    b.ToTable("farms", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.ReasonForAbsence", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("FarmId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("farm_id");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id")
                         .HasName("pk_reason_for_absences");
+
+                    b.HasIndex("FarmId")
+                        .HasDatabaseName("ix_reason_for_absences_farm_id");
 
                     b.ToTable("reason_for_absences", (string)null);
                 });
@@ -109,6 +149,10 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
+
+                    b.Property<Guid>("FarmId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("farm_id");
 
                     b.Property<string>("Login")
                         .IsRequired()
@@ -132,6 +176,9 @@ namespace Data.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_users");
+
+                    b.HasIndex("FarmId")
+                        .HasDatabaseName("ix_users_farm_id");
 
                     b.HasIndex("Login")
                         .IsUnique()
@@ -159,6 +206,10 @@ namespace Data.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("equipment_id");
 
+                    b.Property<Guid>("FarmId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("farm_id");
+
                     b.Property<Guid?>("ReasonForAbsenceId")
                         .HasColumnType("uuid")
                         .HasColumnName("reason_for_absence_id");
@@ -183,6 +234,9 @@ namespace Data.Migrations
                     b.HasIndex("EquipmentId")
                         .HasDatabaseName("ix_work_logs_equipment_id");
 
+                    b.HasIndex("FarmId")
+                        .HasDatabaseName("ix_work_logs_farm_id");
+
                     b.HasIndex("ReasonForAbsenceId")
                         .HasDatabaseName("ix_work_logs_reason_for_absence_id");
 
@@ -199,6 +253,10 @@ namespace Data.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<Guid>("FarmId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("farm_id");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -208,11 +266,21 @@ namespace Data.Migrations
                     b.HasKey("Id")
                         .HasName("pk_work_types");
 
+                    b.HasIndex("FarmId")
+                        .HasDatabaseName("ix_work_types_farm_id");
+
                     b.ToTable("work_types", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Employee", b =>
                 {
+                    b.HasOne("Domain.Entities.Farm", null)
+                        .WithMany()
+                        .HasForeignKey("FarmId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_employees_farms_farm_id");
+
                     b.HasOne("Domain.Entities.User", "User")
                         .WithOne()
                         .HasForeignKey("Domain.Entities.Employee", "UserId")
@@ -220,6 +288,38 @@ namespace Data.Migrations
                         .HasConstraintName("fk_employees_users_user_id");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Equipment", b =>
+                {
+                    b.HasOne("Domain.Entities.Farm", null)
+                        .WithMany()
+                        .HasForeignKey("FarmId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_equipments_farms_farm_id");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ReasonForAbsence", b =>
+                {
+                    b.HasOne("Domain.Entities.Farm", null)
+                        .WithMany()
+                        .HasForeignKey("FarmId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_reason_for_absences_farms_farm_id");
+                });
+
+            modelBuilder.Entity("Domain.Entities.User", b =>
+                {
+                    b.HasOne("Domain.Entities.Farm", "Farm")
+                        .WithMany()
+                        .HasForeignKey("FarmId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_users_farms_farm_id");
+
+                    b.Navigation("Farm");
                 });
 
             modelBuilder.Entity("Domain.Entities.WorkLog", b =>
@@ -236,6 +336,13 @@ namespace Data.Migrations
                         .HasForeignKey("EquipmentId")
                         .OnDelete(DeleteBehavior.SetNull)
                         .HasConstraintName("fk_work_logs_equipments_equipment_id");
+
+                    b.HasOne("Domain.Entities.Farm", null)
+                        .WithMany()
+                        .HasForeignKey("FarmId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_work_logs_farms_farm_id");
 
                     b.HasOne("Domain.Entities.ReasonForAbsence", "ReasonForAbsence")
                         .WithMany()
@@ -289,6 +396,16 @@ namespace Data.Migrations
                     b.Navigation("WorkCost");
 
                     b.Navigation("WorkType");
+                });
+
+            modelBuilder.Entity("Domain.Entities.WorkType", b =>
+                {
+                    b.HasOne("Domain.Entities.Farm", null)
+                        .WithMany()
+                        .HasForeignKey("FarmId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_work_types_farms_farm_id");
                 });
 #pragma warning restore 612, 618
         }

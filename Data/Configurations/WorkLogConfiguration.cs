@@ -35,6 +35,13 @@ public class WorkLogConfiguration : IEntityTypeConfiguration<WorkLog>
             .HasForeignKey(x => x.ReasonForAbsenceId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasIndex(x => x.FarmId);
+
+        builder.HasOne<Farm>()
+            .WithMany()
+            .HasForeignKey(x => x.FarmId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.OwnsOne(x => x.WorkCost, costBuilder =>
         {
             costBuilder.Property(c => c.Rate)

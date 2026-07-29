@@ -23,6 +23,16 @@ public record SessionDataDto
     public Role Role { get; set; }
 
     /// <summary>
+    /// Идентификатор фермы, к которой относится пользователь
+    /// </summary>
+    public Guid FarmId { get; set; }
+
+    /// <summary>
+    /// Название фермы
+    /// </summary>
+    public string FarmName { get; set; } = string.Empty;
+
+    /// <summary>
     /// Дата и время окончания сессии
     /// </summary>
     public DateTimeOffset ExpiresAt { get; set; }

@@ -50,6 +50,10 @@
                         }
                     </ul>
                     <div class="d-flex align-items-center gap-3">
+                        @if (!string.IsNullOrEmpty(session.FarmName))
+                        {
+                            <span class="badge text-bg-light">@session.FarmName</span>
+                        }
                         <span class="navbar-text text-white-50">@session.Login</span>
                         <form method="post" asp-page="/Logout" class="m-0">
                             <button type="submit" class="btn btn-outline-light btn-sm">Выйти</button>

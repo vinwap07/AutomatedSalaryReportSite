@@ -6,8 +6,14 @@ public record UserDetailsDto
 {
     public Guid Id { get; init; }
     public string Login { get; init; } = string.Empty;
-    
+
     public Role Role { get; init; }
+
+    /// <summary>Ферма, к которой относится учётная запись</summary>
+    public Guid FarmId { get; init; }
+
+    /// <summary>Название фермы (заполняется, только если ферма была загружена вместе с пользователем)</summary>
+    public string? FarmName { get; init; }
 }
 
 public record UserListItemDto
@@ -22,6 +28,9 @@ public record CreateUserRequest
     public string Login { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
     public Role Role { get; set; }
+
+    /// <summary>Null — учётная запись создается в ферме текущего пользователя</summary>
+    public Guid? FarmId { get; set; }
 }
 
 public record UpdateUserRequest

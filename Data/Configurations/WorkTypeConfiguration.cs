@@ -15,5 +15,12 @@ public class WorkTypeConfiguration : IEntityTypeConfiguration<WorkType>
         
         builder.Property(x => x.Name)
             .HasMaxLength(255);
+
+        builder.HasIndex(x => x.FarmId);
+
+        builder.HasOne<Farm>()
+            .WithMany()
+            .HasForeignKey(x => x.FarmId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

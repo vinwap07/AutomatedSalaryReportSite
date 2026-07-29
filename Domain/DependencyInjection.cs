@@ -22,6 +22,7 @@ public static class DependencyInjection
         services.AddScoped<IEquipmentService, EquipmentService>();
         services.AddScoped<IReasonForAbsenceService, ReasonForAbsenceService>();
         services.AddScoped<IWorkTypeService, WorkTypeService>();
+        services.AddScoped<IFarmService, FarmService>();
         
         return services;
     }

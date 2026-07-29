@@ -129,6 +129,11 @@ public class AddDayModel(
             {
                 RowErrors.Add($"Строка {rowNumber}: выберите вид работы или причину отсутствия");
             }
+            // Списки загружены с учетом фермы: чужие записи в форму не попадут
+            foreach (var error in ValidateReferences(row))
+            {
+                RowErrors.Add($"Строка {rowNumber}: {error}");
+            }
             if (row.Rate != null ^ row.Volume != null)
             {
                 RowErrors.Add($"Строка {rowNumber}: для расчёта суммы нужны и расценка, и объём");
@@ -175,6 +180,29 @@ public class AddDayModel(
             From = Date.ToString("yyyy-MM-dd"),
             To = Date.ToString("yyyy-MM-dd"),
         });
+    }
+
+    /// <summary>
+    /// Проверяет, что все выбранные в строке справочники относятся к ферме текущего пользователя
+    /// </summary>
+    private IEnumerable<string> ValidateReferences(RowInput row)
+    {
+        if (row.EmployeeId != null && Employees.All(e => e.Id != row.EmployeeId))
+        {
+            yield return "работник не найден";
+        }
+        if (row.EquipmentId != null && EquipmentList.All(e => e.Id != row.EquipmentId))
+        {
+            yield return "техника не найдена";
+        }
+        if (row.WorkTypeId != null && WorkTypes.All(w => w.Id != row.WorkTypeId))
+        {
+            yield return "вид работы не найден";
+        }
+        if (row.ReasonForAbsenceId != null && Reasons.All(r => r.Id != row.ReasonForAbsenceId))
+        {
+            yield return "причина отсутствия не найдена";
+        }
     }
 
     private async Task LoadListsAsync(CancellationToken cancellationToken)

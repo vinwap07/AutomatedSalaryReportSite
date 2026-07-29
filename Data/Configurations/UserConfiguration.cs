@@ -26,5 +26,12 @@ public class UserConfiguration: IEntityTypeConfiguration<User>
             .HasDefaultValue(Role.User)
             .HasConversion<string>()
             .HasMaxLength(30);
+
+        builder.HasIndex(x => x.FarmId);
+
+        builder.HasOne(x => x.Farm)
+            .WithMany()
+            .HasForeignKey(x => x.FarmId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }
