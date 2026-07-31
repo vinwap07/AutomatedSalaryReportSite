@@ -18,7 +18,7 @@ public record WorkCost
     public decimal Volume { get; init; }
     
     /// <summary>
-    /// Единица измерения объема выполненной работы (тонны, количество рейсов, гектары)
+    /// Единица измерения объема выполненной работы (тонны, килограммы, количество рейсов, гектары)
     /// </summary>
     public UnitOfMeasure UnitOfMeasure { get; init; }
     
@@ -54,6 +54,9 @@ public enum UnitOfMeasure
 {
     [Display(Name = "Тонна")]
     Ton,
+    
+    [Display(Name = "Килограмм")]
+    Kilogram,
     
     [Display(Name = "Рейс")]
     Trip,
