@@ -18,7 +18,7 @@ public record WorkCost
     public decimal Volume { get; init; }
     
     /// <summary>
-    /// Единица измерения объема выполненной работы (тонны, килограммы, количество рейсов, гектары)
+    /// Единица измерения объема выполненной работы (тонны, килограммы, количество рейсов, гектары, часы)
     /// </summary>
     public UnitOfMeasure UnitOfMeasure { get; init; }
     
@@ -62,5 +62,8 @@ public enum UnitOfMeasure
     Trip,
     
     [Display(Name = "Гектар")]
-    Hectare
+    Hectare,
+    
+    [Display(Name = "Час")]
+    Hour
 }
