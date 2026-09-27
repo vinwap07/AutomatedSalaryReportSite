@@ -1,8 +1,8 @@
 using Domain.Dtos;
 using Domain.Entities;
 using Domain.Exceptions;
+using Domain.Extensions;
 using Domain.Services.Abstractions;
-using Domain.ValueObjects;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using WebApp.Logging;
@@ -29,34 +29,21 @@ public class EditWorkLogModel(
     public DateOnly Date { get; set; }
 
     [BindProperty]
-    public Guid EmployeeId { get; set; }
-
-    [BindProperty]
-    public Guid? EquipmentId { get; set; }
-
-    [BindProperty]
-    public Guid? WorkTypeId { get; set; }
-
-    [BindProperty]
-    public int? WorkHours { get; set; }
-
-    [BindProperty]
-    public decimal? Rate { get; set; }
-
-    [BindProperty]
-    public decimal? Volume { get; set; }
-
-    [BindProperty]
-    public UnitOfMeasure Unit { get; set; }
-
-    [BindProperty]
-    public Guid? ReasonForAbsenceId { get; set; }
+    public WorkEntryInput Entry { get; set; } = new();
 
     public List<EmployeeListItemDto> Employees { get; private set; } = [];
     public List<Domain.Entities.Equipment> EquipmentList { get; private set; } = [];
     public List<WorkType> WorkTypes { get; private set; } = [];
+
+    /// <summary>Виды работ по специальностям (неназначенные первыми)</summary>
+    public List<IGrouping<Specialty?, WorkType>> WorkTypeGroups { get; private set; } = [];
+
     public List<ReasonForAbsence> Reasons { get; private set; } = [];
     public List<string> Errors { get; } = [];
+
+    /// <summary>Выбран разнорабочий: форма без техники и часов, со своими единицами измерения и окладом</summary>
+    public bool IsLaborer =>
+        Employees.FirstOrDefault(e => e.Id == Entry.EmployeeId)?.Specialty == Specialty.Laborer;
 
     public async Task<IActionResult> OnGetAsync(CancellationToken cancellationToken)
     {
@@ -66,14 +53,7 @@ public class EditWorkLogModel(
         {
             var log = await workLogService.GetByIdAsync(Id, cancellationToken);
             Date = log.Date;
-            EmployeeId = log.Employee.Id;
-            EquipmentId = log.Equipment?.Id;
-            WorkTypeId = log.WorkType?.Id;
-            WorkHours = log.WorkHours;
-            Rate = log.WorkCost?.Rate;
-            Volume = log.WorkCost?.Volume;
-            Unit = log.WorkCost?.UnitOfMeasure ?? UnitOfMeasure.Ton;
-            ReasonForAbsenceId = log.ReasonForAbsence?.Id;
+            Entry = WorkEntryInput.FromLog(log);
             return Page();
         }
         catch (NotFoundException)
@@ -87,33 +67,30 @@ public class EditWorkLogModel(
     {
         await LoadListsAsync(cancellationToken);
 
-        if (EmployeeId == Guid.Empty)
+        if (Entry.EmployeeId == null)
         {
             Errors.Add("Выберите работника");
         }
-        if (WorkTypeId == null && ReasonForAbsenceId == null)
+        if (Entry.WorkTypeId == null && Entry.ReasonForAbsenceId == null)
         {
             Errors.Add("Выберите вид работы или причину отсутствия");
         }
-        if (Rate != null ^ Volume != null)
-        {
-            Errors.Add("Для расчёта суммы нужны и расценка, и объём");
-        }
+        Errors.AddRange(Entry.ValidatePayment(IsLaborer).Select(e => char.ToUpper(e[0]) + e[1..]));
 
         // Списки загружены с учетом фермы: чужие записи в форму не попадут
-        if (EmployeeId != Guid.Empty && Employees.All(e => e.Id != EmployeeId))
+        if (Entry.EmployeeId != null && Employees.All(e => e.Id != Entry.EmployeeId))
         {
             Errors.Add("Работник не найден");
         }
-        if (EquipmentId != null && EquipmentList.All(e => e.Id != EquipmentId))
+        if (Entry.EquipmentId != null && EquipmentList.All(e => e.Id != Entry.EquipmentId))
         {
             Errors.Add("Техника не найдена");
         }
-        if (WorkTypeId != null && WorkTypes.All(w => w.Id != WorkTypeId))
+        if (Entry.WorkTypeId != null && WorkTypes.All(w => w.Id != Entry.WorkTypeId))
         {
             Errors.Add("Вид работы не найден");
         }
-        if (ReasonForAbsenceId != null && Reasons.All(r => r.Id != ReasonForAbsenceId))
+        if (Entry.ReasonForAbsenceId != null && Reasons.All(r => r.Id != Entry.ReasonForAbsenceId))
         {
             Errors.Add("Причина отсутствия не найдена");
         }
@@ -128,13 +105,13 @@ public class EditWorkLogModel(
             var updated = await workLogService.UpdateAsync(new UpdateWorkLogRequest
             {
                 Id = Id,
-                EmployeeId = EmployeeId,
+                EmployeeId = Entry.EmployeeId,
                 Date = Date,
-                EquipmentId = EquipmentId,
-                WorkTypeId = WorkTypeId,
-                WorkHours = WorkHours,
-                WorkCost = Rate != null && Volume != null ? new WorkCost(Rate.Value, Volume.Value, Unit) : null,
-                ReasonForAbsenceId = ReasonForAbsenceId,
+                EquipmentId = Entry.GetEquipmentId(IsLaborer),
+                WorkTypeId = Entry.WorkTypeId,
+                WorkHours = Entry.GetWorkHours(IsLaborer),
+                WorkCost = Entry.GetWorkCost(IsLaborer),
+                ReasonForAbsenceId = Entry.ReasonForAbsenceId,
             }, cancellationToken);
 
             var login = HttpContext.GetSessionData()?.Login ?? "?";
@@ -183,6 +160,7 @@ public class EditWorkLogModel(
             .OrderBy(e => e.Name).ToList();
         WorkTypes = (await workTypeService.GetAllAsync(cancellationToken))
             .OrderBy(w => w.Name).ToList();
+        WorkTypeGroups = WorkTypes.GroupBySpecialty();
         Reasons = (await reasonForAbsenceService.GetAllAsync(cancellationToken))
             .OrderBy(r => r.Name).ToList();
     }

@@ -1,9 +1,13 @@
 @page "{id:guid}"
 @using Domain.ValueObjects
+@using WebApp.Pages.Shared
 @model WebApp.Pages.Admin.EditWorkLogModel
 @{
     ViewData["Title"] = "Редактирование записи";
-    var units = new[] { UnitOfMeasure.Ton, UnitOfMeasure.Kilogram, UnitOfMeasure.Trip, UnitOfMeasure.Hectare, UnitOfMeasure.Hour };
+    var entry = Model.Entry;
+    // Начальное состояние формы; при смене работника или единицы его пересчитывает js/work-entry.js
+    var isLaborer = Model.IsLaborer;
+    var isSalary = entry.IsSalary(isLaborer);
 }
 
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
@@ -25,7 +29,7 @@
 
 <div class="card" style="max-width: 640px">
     <div class="card-body">
-        <form method="post">
+        <form method="post" class="work-entry @(isLaborer ? "is-laborer" : null) @(isSalary ? "is-salary" : null)">
             <div class="row g-3">
                 <div class="col-12 col-sm-6">
                     <label class="form-label">Дата</label>
@@ -33,66 +37,80 @@
                 </div>
                 <div class="col-12 col-sm-6">
                     <label class="form-label">Работник</label>
-                    <select name="EmployeeId" class="form-select" required>
+                    <select name="Entry.EmployeeId" class="form-select employee-select" required>
                         <option value="">— работник —</option>
                         @foreach (var employee in Model.Employees)
                         {
-                            <option value="@employee.Id" selected="@(employee.Id == Model.EmployeeId)">@employee.Name</option>
+                            <option value="@employee.Id" data-specialty="@employee.Specialty" selected="@(employee.Id == entry.EmployeeId)">@employee.Name</option>
                         }
                     </select>
                 </div>
-                <div class="col-12">
+                <div class="col-12 specialist-only">
                     <label class="form-label">Техника</label>
-                    <select name="EquipmentId" class="form-select">
+                    <select name="Entry.EquipmentId" class="form-select" disabled="@isLaborer">
                         <option value="">— без техники —</option>
                         @foreach (var equipment in Model.EquipmentList)
                         {
-                            <option value="@equipment.Id" selected="@(equipment.Id == Model.EquipmentId)">@equipment.Name</option>
+                            <option value="@equipment.Id" selected="@(equipment.Id == entry.EquipmentId)">@equipment.Name</option>
                         }
                     </select>
                 </div>
                 <div class="col-12">
                     <label class="form-label">Вид работы</label>
-                    <select name="WorkTypeId" class="form-select">
+                    <select name="Entry.WorkTypeId" class="form-select work-type-select">
                         <option value="">— не выбрано —</option>
-                        @foreach (var workType in Model.WorkTypes)
+                        <partial name="_WorkTypeOptions" model="new WorkTypeOptionsModel(Model.WorkTypeGroups, entry.WorkTypeId)" />
+                    </select>
+                </div>
+                <div class="col-4 specialist-only">
+                    <label class="form-label">Часы</label>
+                    <input type="number" name="Entry.WorkHours" value="@entry.WorkHours" min="0" max="24" class="form-control" disabled="@isLaborer" />
+                </div>
+                <div class="col-4 laborer-only">
+                    <label class="form-label">Ед. изм.</label>
+                    <select name="Entry.LaborerUnit" class="form-select laborer-unit-select" disabled="@(!isLaborer)">
+                        @foreach (var unit in SpecialtyExtensions.LaborerUnits)
                         {
-                            <option value="@workType.Id" selected="@(workType.Id == Model.WorkTypeId)">@workType.Name</option>
+                            <option value="@unit" selected="@(unit == (entry.LaborerUnit ?? UnitOfMeasure.Hour))">@unit.GetDisplayName()</option>
                         }
                     </select>
                 </div>
-                <div class="col-4">
-                    <label class="form-label">Часы</label>
-                    <input type="number" name="WorkHours" value="@Model.WorkHours" min="0" max="24" class="form-control" />
-                </div>
-                <div class="col-4">
+                <div class="col-4 hide-for-salary">
                     <label class="form-label">Расценка, ₽</label>
-                    <input type="text" inputmode="decimal" name="Rate"
-                           value="@Model.Rate?.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)"
-                           class="form-control" />
+                    <input type="text" inputmode="decimal" name="Entry.Rate"
+                           value="@entry.Rate?.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)"
+                           class="form-control" disabled="@isSalary" />
                 </div>
-                <div class="col-4">
-                    <label class="form-label">Объём</label>
-                    <input type="text" inputmode="decimal" name="Volume"
-                           value="@Model.Volume?.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)"
-                           class="form-control" />
+                <div class="col-4 hide-for-salary">
+                    <label class="form-label">
+                        <span class="specialist-only">Объём</span><span class="laborer-only">Количество</span>
+                    </label>
+                    <input type="text" inputmode="decimal" name="Entry.Volume"
+                           value="@entry.Volume?.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)"
+                           class="form-control" disabled="@isSalary" />
                 </div>
-                <div class="col-12 col-sm-6">
+                <div class="col-8 col-sm-4 salary-only">
+                    <label class="form-label">Сумма оклада, ₽</label>
+                    <input type="text" inputmode="decimal" name="Entry.Amount"
+                           value="@entry.Amount?.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)"
+                           class="form-control" disabled="@(!isSalary)" />
+                </div>
+                <div class="col-12 col-sm-6 specialist-only">
                     <label class="form-label">Единица измерения</label>
-                    <select name="Unit" class="form-select">
-                        @foreach (var unit in units)
+                    <select name="Entry.Unit" class="form-select" disabled="@isLaborer">
+                        @foreach (var unit in SpecialtyExtensions.SpecialistUnits)
                         {
-                            <option value="@unit" selected="@(unit == Model.Unit)">@unit.GetDisplayName()</option>
+                            <option value="@unit" selected="@(unit == (entry.Unit ?? UnitOfMeasure.Ton))">@unit.GetDisplayName()</option>
                         }
                     </select>
                 </div>
                 <div class="col-12 col-sm-6">
                     <label class="form-label">Причина отсутствия</label>
-                    <select name="ReasonForAbsenceId" class="form-select">
+                    <select name="Entry.ReasonForAbsenceId" class="form-select">
                         <option value="">— не выбрано —</option>
                         @foreach (var reason in Model.Reasons)
                         {
-                            <option value="@reason.Id" selected="@(reason.Id == Model.ReasonForAbsenceId)">@reason.Name</option>
+                            <option value="@reason.Id" selected="@(reason.Id == entry.ReasonForAbsenceId)">@reason.Name</option>
                         }
                     </select>
                 </div>
@@ -106,3 +124,7 @@
         </form>
     </div>
 </div>
+
+@section Scripts {
+    <script src="~/js/work-entry.js" asp-append-version="true"></script>
+}

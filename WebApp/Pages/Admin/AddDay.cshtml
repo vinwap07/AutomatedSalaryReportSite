@@ -1,64 +1,74 @@
 @page
 @using Domain.ValueObjects
+@using WebApp.Pages.Shared
 @model WebApp.Pages.Admin.AddDayModel
 @{
     ViewData["Title"] = "Добавить день";
-    var units = new[] { UnitOfMeasure.Ton, UnitOfMeasure.Kilogram, UnitOfMeasure.Trip, UnitOfMeasure.Hectare, UnitOfMeasure.Hour };
 }
 
 @{
-    async Task RenderRowAsync(string index, AddDayModel.RowInput row)
+    async Task RenderRowAsync(string index, WorkEntryInput row)
     {
-        <tr class="entry-row">
+        // Начальное состояние строки; при смене работника или единицы его пересчитывает js/work-entry.js
+        var isLaborer = Model.IsLaborer(row.EmployeeId);
+        var isSalary = row.IsSalary(isLaborer);
+        <tr class="entry-row work-entry @(isLaborer ? "is-laborer" : null) @(isSalary ? "is-salary" : null)">
             <td data-label="">
                 <input type="hidden" name="Rows.Index" value="@index" />
             </td>
             <td data-label="Работник">
-                <select name="Rows[@index].EmployeeId" class="form-select form-select-sm">
+                <select name="Rows[@index].EmployeeId" class="form-select form-select-sm employee-select">
                     <option value="">— работник —</option>
                     @foreach (var employee in Model.Employees)
                     {
-                        <option value="@employee.Id" selected="@(employee.Id == row.EmployeeId)">@employee.Name</option>
+                        <option value="@employee.Id" data-specialty="@employee.Specialty" selected="@(employee.Id == row.EmployeeId)">@employee.Name</option>
                     }
                 </select>
             </td>
-            <td data-label="Техника">
-                <select name="Rows[@index].EquipmentId" class="form-select form-select-sm">
+            <td data-label="Техника" class="specialist-cell">
+                <select name="Rows[@index].EquipmentId" class="form-select form-select-sm specialist-only" disabled="@isLaborer">
                     <option value="">— техника —</option>
                     @foreach (var equipment in Model.EquipmentList)
                     {
                         <option value="@equipment.Id" selected="@(equipment.Id == row.EquipmentId)">@equipment.Name</option>
                     }
                 </select>
+                <span class="laborer-only field-placeholder text-muted">—</span>
             </td>
             <td data-label="Вид работы">
-                <select name="Rows[@index].WorkTypeId" class="form-select form-select-sm">
+                <select name="Rows[@index].WorkTypeId" class="form-select form-select-sm work-type-select">
                     <option value="">— вид работы —</option>
-                    @foreach (var workType in Model.WorkTypes)
-                    {
-                        <option value="@workType.Id" selected="@(workType.Id == row.WorkTypeId)">@workType.Name</option>
-                    }
+                    <partial name="_WorkTypeOptions" model="new WorkTypeOptionsModel(Model.WorkTypeGroups, row.WorkTypeId)" />
                 </select>
             </td>
-            <td data-label="Часы" class="entry-narrow">
+            <td data-label="Часы" class="entry-narrow specialist-cell">
                 <input type="number" name="Rows[@index].WorkHours" value="@row.WorkHours" min="0" max="24"
-                       class="form-control form-control-sm" placeholder="ч" />
+                       class="form-control form-control-sm specialist-only" placeholder="ч" disabled="@isLaborer" />
+                <span class="laborer-only field-placeholder text-muted" title="Часы разнорабочего берутся из объёма при почасовой оплате">—</span>
             </td>
-            <td data-label="Расценка" class="entry-narrow">
+            <td data-label="Расценка" class="entry-narrow not-salary-cell">
                 <input type="text" inputmode="decimal" name="Rows[@index].Rate"
                        value="@row.Rate?.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)"
-                       class="form-control form-control-sm rate-input" placeholder="₽" />
+                       class="form-control form-control-sm rate-input hide-for-salary" placeholder="₽" disabled="@isSalary" />
+                <span class="salary-only field-placeholder text-muted">—</span>
             </td>
-            <td data-label="Объём" class="entry-narrow">
+            <td data-label="Объём" class="entry-narrow not-salary-cell">
                 <input type="text" inputmode="decimal" name="Rows[@index].Volume"
                        value="@row.Volume?.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)"
-                       class="form-control form-control-sm volume-input" placeholder="объём" />
+                       class="form-control form-control-sm volume-input hide-for-salary" placeholder="объём" disabled="@isSalary" />
+                <span class="salary-only field-placeholder text-muted">—</span>
             </td>
             <td data-label="Ед. изм.">
-                <select name="Rows[@index].Unit" class="form-select form-select-sm">
-                    @foreach (var unit in units)
+                <select name="Rows[@index].Unit" class="form-select form-select-sm specialist-only" disabled="@isLaborer">
+                    @foreach (var unit in SpecialtyExtensions.SpecialistUnits)
                     {
                         <option value="@unit" selected="@(unit == (row.Unit ?? UnitOfMeasure.Ton))">@unit.GetDisplayName()</option>
+                    }
+                </select>
+                <select name="Rows[@index].LaborerUnit" class="form-select form-select-sm laborer-only laborer-unit-select" disabled="@(!isLaborer)">
+                    @foreach (var unit in SpecialtyExtensions.LaborerUnits)
+                    {
+                        <option value="@unit" selected="@(unit == (row.LaborerUnit ?? UnitOfMeasure.Hour))">@unit.GetDisplayName()</option>
                     }
                 </select>
             </td>
@@ -72,7 +82,10 @@
                 </select>
             </td>
             <td data-label="Сумма" class="num">
-                <span class="row-sum fw-semibold">—</span>
+                <span class="row-sum fw-semibold hide-for-salary">—</span>
+                <input type="text" inputmode="decimal" name="Rows[@index].Amount"
+                       value="@row.Amount?.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)"
+                       class="form-control form-control-sm amount-input salary-only" placeholder="оклад, ₽" disabled="@(!isSalary)" />
             </td>
             <td data-label="">
                 <button type="button" class="btn btn-outline-danger btn-sm remove-row w-100" title="Убрать строку">✕</button>
@@ -161,10 +174,11 @@
 </form>
 
 <template id="rowTemplate">
-    @{ await RenderRowAsync("__idx__", new AddDayModel.RowInput()); }
+    @{ await RenderRowAsync("__idx__", new WorkEntryInput()); }
 </template>
 
 @section Scripts {
+    <script src="~/js/work-entry.js" asp-append-version="true"></script>
     <script>
         (function () {
             let rowCounter = @Model.Rows.Count;
@@ -183,9 +197,9 @@
             function recalc() {
                 let total = 0;
                 rowsBody.querySelectorAll('tr.entry-row').forEach(function (row) {
-                    const rate = parseNum(row.querySelector('.rate-input')?.value);
-                    const volume = parseNum(row.querySelector('.volume-input')?.value);
-                    const sum = rate * volume;
+                    const sum = row.classList.contains('is-salary')
+                        ? parseNum(row.querySelector('.amount-input')?.value)
+                        : parseNum(row.querySelector('.rate-input')?.value) * parseNum(row.querySelector('.volume-input')?.value);
                     total += sum;
                     const sumCell = row.querySelector('.row-sum');
                     if (sumCell) sumCell.textContent = sum > 0 ? formatMoney(sum) : '—';
@@ -207,7 +221,14 @@
             });
 
             rowsBody.addEventListener('input', function (event) {
-                if (event.target.matches('.rate-input, .volume-input')) {
+                if (event.target.matches('.rate-input, .volume-input, .amount-input')) {
+                    recalc();
+                }
+            });
+
+            // Смена работника или единицы измерения может переключить строку на оклад и обратно
+            rowsBody.addEventListener('change', function (event) {
+                if (event.target.matches('.employee-select, .laborer-unit-select')) {
                     recalc();
                 }
             });

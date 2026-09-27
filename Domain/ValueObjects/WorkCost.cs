@@ -18,7 +18,7 @@ public record WorkCost
     public decimal Volume { get; init; }
     
     /// <summary>
-    /// Единица измерения объема выполненной работы (тонны, килограммы, количество рейсов, гектары, часы)
+    /// Единица измерения объема выполненной работы (тонны, килограммы, количество рейсов, гектары, часы, штуки, дни, оклад)
     /// </summary>
     public UnitOfMeasure UnitOfMeasure { get; init; }
     
@@ -26,7 +26,12 @@ public record WorkCost
     /// Итоговая сумма за выполненную работу
     /// </summary>
     public decimal Total => Volume * Rate;
-    
+
+    /// <summary>
+    /// Оплата окладом (фиксированная сумма)
+    /// </summary>
+    public bool IsSalary => UnitOfMeasure == UnitOfMeasure.Salary;
+
     private WorkCost() { }
 
     public WorkCost(decimal rate, decimal volume, UnitOfMeasure unitOfMeasure)
@@ -45,6 +50,12 @@ public record WorkCost
         Volume = volume;
         UnitOfMeasure = unitOfMeasure;
     }
+
+    /// <summary>
+    /// Оплата окладом: фиксированная сумма без расценки и объема
+    /// </summary>
+    /// <param name="amount">Сумма оклада</param>
+    public static WorkCost FromSalary(decimal amount) => new(amount, 1, UnitOfMeasure.Salary);
 }
 
 /// <summary>
@@ -65,5 +76,17 @@ public enum UnitOfMeasure
     Hectare,
     
     [Display(Name = "Час")]
-    Hour
+    Hour,
+    
+    [Display(Name = "Штука")]
+    Piece,
+    
+    [Display(Name = "День")]
+    Day,
+    
+    /// <summary>
+    /// Фиксированная сумма (только для разнорабочих): расценка равна сумме, объем всегда 1
+    /// </summary>
+    [Display(Name = "Оклад")]
+    Salary
 }

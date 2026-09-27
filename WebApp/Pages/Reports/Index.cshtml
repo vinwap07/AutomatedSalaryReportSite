@@ -189,9 +189,13 @@ else
                             }
                         </td>
                         <td data-label="Часы" class="num">@(log.WorkHours?.ToString() ?? "—")</td>
-                        <td data-label="Расценка" class="num">@(log.WorkCost?.Rate.ToString("N2") ?? "—")</td>
+                        <td data-label="Расценка" class="num">@(log.WorkCost is { IsSalary: false } ? log.WorkCost.Rate.ToString("N2") : "—")</td>
                         <td data-label="Объём" class="num">
-                            @if (log.WorkCost != null)
+                            @if (log.WorkCost is { IsSalary: true })
+                            {
+                                <span class="text-muted small">оклад</span>
+                            }
+                            else if (log.WorkCost != null)
                             {
                                 <span>@log.WorkCost.Volume.ToString("0.##") <span class="text-muted small">@log.WorkCost.UnitOfMeasure.GetDisplayName()</span></span>
                             }

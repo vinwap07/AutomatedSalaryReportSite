@@ -1,0 +1,12 @@
+@model WebApp.Pages.Shared.WorkTypeOptionsModel
+@* Группы в исходном порядке: data-order нужен js/work-entry.js, чтобы поднимать наверх работы специальности работника *@
+@for (var i = 0; i < Model.Groups.Count; i++)
+{
+    var group = Model.Groups[i];
+    <optgroup label="@(group.Key?.GetDisplayName() ?? "Без специальности")" data-specialty="@(group.Key?.ToString() ?? "")" data-order="@i">
+        @foreach (var workType in group)
+        {
+            <option value="@workType.Id" selected="@(workType.Id == Model.SelectedId)">@workType.Name</option>
+        }
+    </optgroup>
+}

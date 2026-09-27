@@ -263,6 +263,11 @@ namespace Data.Migrations
                         .HasColumnType("character varying(255)")
                         .HasColumnName("name");
 
+                    b.Property<string>("Specialty")
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)")
+                        .HasColumnName("specialty");
+
                     b.HasKey("Id")
                         .HasName("pk_work_types");
 

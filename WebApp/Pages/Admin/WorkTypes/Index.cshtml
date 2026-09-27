@@ -2,75 +2,181 @@
 @model WebApp.Pages.Admin.WorkTypes.IndexModel
 @{
     ViewData["Title"] = "Виды работ";
+    var specialistSpecialties = Enum.GetValues<Specialty>().Where(s => s != Specialty.Laborer).ToList();
+    var emptyText = string.IsNullOrWhiteSpace(Model.Search) ? "Работ пока нет." : "Ничего не найдено.";
+}
+
+@{
+    // Строка вида работы; неназначенной работе специальность можно выбрать прямо в списке
+    async Task RenderItemAsync(WorkType item)
+    {
+        if (item.Id == Model.EditId)
+        {
+            <tr>
+                <td colspan="2">
+                    <form method="post" asp-page-handler="Update" asp-route-id="@item.Id" class="d-flex flex-wrap gap-2">
+                        <input name="Name" value="@item.Name" class="form-control form-control-sm flex-grow-1 w-auto" required />
+                        <select name="Specialty" class="form-select form-select-sm w-auto" aria-label="Специальность">
+                            <option value="">— не назначена —</option>
+                            @foreach (var specialty in Enum.GetValues<Specialty>())
+                            {
+                                <option value="@specialty" selected="@(specialty == item.Specialty)">@specialty.GetDisplayName()</option>
+                            }
+                        </select>
+                        <button type="submit" class="btn btn-success btn-sm">Сохранить</button>
+                        <a class="btn btn-outline-secondary btn-sm" asp-page="/Admin/WorkTypes/Index">Отмена</a>
+                    </form>
+                </td>
+            </tr>
+        }
+        else
+        {
+            <tr>
+                <td>@item.Name</td>
+                <td style="width:1%">
+                    <div class="d-flex gap-1 justify-content-end align-items-center">
+                        @if (item.Specialty == null)
+                        {
+                            <form method="post" asp-page-handler="Update" asp-route-id="@item.Id" class="m-0">
+                                <input type="hidden" name="Name" value="@item.Name" />
+                                <select name="Specialty" class="form-select form-select-sm" style="min-width: 9.5rem" data-autosubmit aria-label="Назначить специальность">
+                                    <option value="">назначить…</option>
+                                    @foreach (var specialty in Enum.GetValues<Specialty>())
+                                    {
+                                        <option value="@specialty">@specialty.GetDisplayName()</option>
+                                    }
+                                </select>
+                            </form>
+                        }
+                        <a class="btn btn-outline-primary btn-sm" asp-page="/Admin/WorkTypes/Index" asp-route-EditId="@item.Id" title="Изменить">✎</a>
+                        <form method="post" asp-page-handler="Delete" data-confirm="Удалить вид работы «@item.Name»?" class="m-0">
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <input type="hidden" name="name" value="@item.Name" />
+                            <button type="submit" class="btn btn-outline-danger btn-sm" title="Удалить">✕</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+        }
+    }
 }
 
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
     <h1 class="h3 m-0">Виды работ</h1>
 </div>
 
-<div class="card mb-3">
-    <div class="card-body py-3">
-        <form method="post" asp-page-handler="Create" class="row g-2 align-items-end mb-2">
-            <div class="col-12 col-md-6">
-                <label class="form-label mb-1">Новый вид работы</label>
-                <input name="Name" class="form-control" required placeholder="Например: раздача кормов" />
+<form method="get" class="row g-2 align-items-center mb-3">
+    <div class="col-12 col-md-6">
+        <input name="Search" value="@Model.Search" class="form-control form-control-sm" placeholder="🔍 Поиск по названию…" />
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-outline-secondary btn-sm">Найти</button>
+    </div>
+    @if (!string.IsNullOrWhiteSpace(Model.Search))
+    {
+        <div class="col-auto">
+            <a class="btn btn-link btn-sm" asp-page="/Admin/WorkTypes/Index">Сбросить</a>
+        </div>
+    }
+</form>
+
+<div class="row g-3">
+    <div class="col-12 col-lg-7">
+        <div class="card">
+            <div class="card-header fw-semibold">Работы специалистов</div>
+            <div class="card-body py-3 border-bottom">
+                <form method="post" asp-page-handler="Create" class="row g-2 align-items-end">
+                    <div class="col-12 col-sm-6">
+                        <label class="form-label mb-1">Новый вид работы</label>
+                        <input name="Name" class="form-control" required placeholder="Например: раздача кормов" />
+                    </div>
+                    <div class="col-8 col-sm-4">
+                        <label class="form-label mb-1">Специальность</label>
+                        <select name="Specialty" class="form-select">
+                            <option value="">— не назначена —</option>
+                            @foreach (var specialty in specialistSpecialties)
+                            {
+                                <option value="@specialty">@specialty.GetDisplayName()</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-4 col-sm-2">
+                        <button type="submit" class="btn btn-success w-100">Добавить</button>
+                    </div>
+                </form>
+                <div class="form-text">
+                    Работы специальности показываются первыми в списке, когда в день добавляется работник этой специальности.
+                    Остальные работы тоже остаются доступны.
+                </div>
             </div>
-            <div class="col-12 col-md-2">
-                <button type="submit" class="btn btn-success w-100">Добавить</button>
+            @if (Model.SpecialistGroups.Count == 0)
+            {
+                <div class="card-body text-muted">@emptyText</div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover align-middle mb-0 card-table">
+                        <tbody>
+                        @foreach (var group in Model.SpecialistGroups)
+                        {
+                            <tr class="group-header">
+                                <td colspan="2">
+                                    @(group.Key?.GetDisplayName() ?? "Без специальности")
+                                    <span class="text-muted fw-normal small">· @group.Count()</span>
+                                    @if (group.Key == null)
+                                    {
+                                        <div class="small fw-normal text-muted">Выберите специальность, чтобы работа поднималась в начало списка у её работников</div>
+                                    }
+                                </td>
+                            </tr>
+                            @foreach (var item in group)
+                            {
+                                await RenderItemAsync(item);
+                            }
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-5">
+        <div class="card">
+            <div class="card-header fw-semibold">Разнорабочие</div>
+            <div class="card-body py-3 border-bottom">
+                <form method="post" asp-page-handler="Create" class="row g-2 align-items-end">
+                    <input type="hidden" name="Specialty" value="@Specialty.Laborer" />
+                    <div class="col-8 col-sm-9">
+                        <label class="form-label mb-1">Новая работа</label>
+                        <input name="Name" class="form-control" required placeholder="Например: чистка поилок" />
+                    </div>
+                    <div class="col-4 col-sm-3">
+                        <button type="submit" class="btn btn-success w-100">Добавить</button>
+                    </div>
+                </form>
+                <div class="form-text">
+                    Неквалифицированные работы: оплата за час, штуку, день или окладом — выбирается при добавлении дня.
+                </div>
             </div>
-        </form>
-        <form method="get" class="row g-2 align-items-center">
-            <div class="col-12 col-md-6">
-                <input name="Search" value="@Model.Search" class="form-control form-control-sm" placeholder="🔍 Поиск по названию…" />
-            </div>
-            <div class="col-auto">
-                <button type="submit" class="btn btn-outline-secondary btn-sm">Найти</button>
-            </div>
-        </form>
+            @if (Model.LaborerItems.Count == 0)
+            {
+                <div class="card-body text-muted">@emptyText</div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover align-middle mb-0 card-table">
+                        <tbody>
+                        @foreach (var item in Model.LaborerItems)
+                        {
+                            await RenderItemAsync(item);
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
     </div>
 </div>
-
-@if (Model.Items.Count == 0)
-{
-    <div class="alert alert-secondary">Ничего не найдено.</div>
-}
-else
-{
-    <div class="table-responsive">
-        <table class="table table-sm table-hover align-middle bg-white" style="max-width: 720px">
-            <tbody>
-            @foreach (var item in Model.Items)
-            {
-                if (item.Id == Model.EditId)
-                {
-                    <tr>
-                        <td colspan="2">
-                            <form method="post" asp-page-handler="Update" asp-route-id="@item.Id" class="d-flex gap-2">
-                                <input name="Name" value="@item.Name" class="form-control form-control-sm" required />
-                                <button type="submit" class="btn btn-success btn-sm">Сохранить</button>
-                                <a class="btn btn-outline-secondary btn-sm" asp-page="/Admin/WorkTypes/Index">Отмена</a>
-                            </form>
-                        </td>
-                    </tr>
-                }
-                else
-                {
-                    <tr>
-                        <td>@item.Name</td>
-                        <td style="width:120px">
-                            <div class="d-flex gap-1 justify-content-end">
-                                <a class="btn btn-outline-primary btn-sm" asp-page="/Admin/WorkTypes/Index" asp-route-EditId="@item.Id">✎</a>
-                                <form method="post" asp-page-handler="Delete" data-confirm="Удалить вид работы «@item.Name»?" class="m-0">
-                                    <input type="hidden" name="id" value="@item.Id" />
-                                    <input type="hidden" name="name" value="@item.Name" />
-                                    <button type="submit" class="btn btn-outline-danger btn-sm">✕</button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                }
-            }
-            </tbody>
-        </table>
-    </div>
-}

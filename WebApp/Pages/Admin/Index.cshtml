@@ -41,10 +41,7 @@
                 <label class="form-label mb-1">Вид работы</label>
                 <select name="WorkTypeId" class="form-select">
                     <option value="">Все виды работ</option>
-                    @foreach (var workType in Model.WorkTypes)
-                    {
-                        <option value="@workType.Id" selected="@(workType.Id == Model.WorkTypeId)">@workType.Name</option>
-                    }
+                    <partial name="_WorkTypeOptions" model="new WebApp.Pages.Shared.WorkTypeOptionsModel(Model.WorkTypeGroups, Model.WorkTypeId)" />
                 </select>
             </div>
             <div class="col-12 col-md-2 d-flex gap-2">
@@ -129,9 +126,13 @@ else
                             }
                         </td>
                         <td data-label="Часы" class="num">@(log.WorkHours?.ToString() ?? "—")</td>
-                        <td data-label="Расценка" class="num">@(log.WorkCost?.Rate.ToString("N2") ?? "—")</td>
+                        <td data-label="Расценка" class="num">@(log.WorkCost is { IsSalary: false } ? log.WorkCost.Rate.ToString("N2") : "—")</td>
                         <td data-label="Объём" class="num">
-                            @if (log.WorkCost != null)
+                            @if (log.WorkCost is { IsSalary: true })
+                            {
+                                <span class="text-muted small">оклад</span>
+                            }
+                            else if (log.WorkCost != null)
                             {
                                 <span>@log.WorkCost.Volume.ToString("0.##") <span class="text-muted small">@log.WorkCost.UnitOfMeasure.GetDisplayName()</span></span>
                             }

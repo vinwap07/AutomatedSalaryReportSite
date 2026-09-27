@@ -1,6 +1,7 @@
 using Domain.Dtos;
 using Domain.Entities;
 using Domain.Exceptions;
+using Domain.Extensions;
 using Domain.Services.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -11,7 +12,8 @@ using WebApp.Middlewares;
 namespace WebApp.Pages.Admin.WorkTypes;
 
 /// <summary>
-/// Справочник видов работ
+/// Справочник видов работ: работы специалистов сгруппированы по специальностям
+/// (неназначенные первыми), работы разнорабочих — в отдельной колонке
 /// </summary>
 public class IndexModel(
     IWorkTypeService workTypeService,
@@ -24,18 +26,30 @@ public class IndexModel(
     [BindProperty]
     public string Name { get; set; } = string.Empty;
 
+    /// <summary>Специальность вида работы (null — не назначена)</summary>
+    [BindProperty]
+    public Specialty? Specialty { get; set; }
+
     [BindProperty(SupportsGet = true)]
     public string? Search { get; set; }
 
-    public List<WorkType> Items { get; private set; } = [];
+    /// <summary>Работы специалистов и неназначенные, по группам специальностей</summary>
+    public List<IGrouping<Specialty?, WorkType>> SpecialistGroups { get; private set; } = [];
+
+    /// <summary>Работы разнорабочих</summary>
+    public List<WorkType> LaborerItems { get; private set; } = [];
 
     public async Task OnGetAsync(CancellationToken cancellationToken)
     {
-        var items = (await workTypeService.GetAllAsync(cancellationToken))
-            .OrderBy(w => w.Name);
-        Items = string.IsNullOrWhiteSpace(Search)
-            ? items.ToList()
-            : items.Where(w => w.Name.Contains(Search.Trim(), StringComparison.OrdinalIgnoreCase)).ToList();
+        var items = await workTypeService.GetAllAsync(cancellationToken);
+        if (!string.IsNullOrWhiteSpace(Search))
+        {
+            items = items.Where(w => w.Name.Contains(Search.Trim(), StringComparison.OrdinalIgnoreCase));
+        }
+
+        var groups = items.GroupBySpecialty();
+        SpecialistGroups = groups.Where(g => g.Key != Domain.Entities.Specialty.Laborer).ToList();
+        LaborerItems = groups.FirstOrDefault(g => g.Key == Domain.Entities.Specialty.Laborer)?.ToList() ?? [];
     }
 
     public async Task<IActionResult> OnPostCreateAsync(CancellationToken cancellationToken)
@@ -46,8 +60,12 @@ public class IndexModel(
             return RedirectToPage();
         }
 
-        var workType = await workTypeService.CreateAsync(new CreateWorkTypeRequest { Name = Name.Trim() }, cancellationToken);
-        await auditLogger.LogAsync(CurrentLogin, "Добавлен вид работы", workType.Name);
+        var workType = await workTypeService.CreateAsync(new CreateWorkTypeRequest
+        {
+            Name = Name.Trim(),
+            Specialty = Specialty,
+        }, cancellationToken);
+        await auditLogger.LogAsync(CurrentLogin, "Добавлен вид работы", $"{workType.Name} | {SpecialtyName(workType.Specialty)}");
         TempData["Success"] = $"Вид работы «{workType.Name}» добавлен";
         return RedirectToPage();
     }
@@ -62,8 +80,13 @@ public class IndexModel(
 
         try
         {
-            var workType = await workTypeService.UpdateAsync(new UpdateWorkTypeRequest { Id = id, Name = Name.Trim() }, cancellationToken);
-            await auditLogger.LogAsync(CurrentLogin, "Изменён вид работы", workType.Name);
+            var workType = await workTypeService.UpdateAsync(new UpdateWorkTypeRequest
+            {
+                Id = id,
+                Name = Name.Trim(),
+                Specialty = Specialty,
+            }, cancellationToken);
+            await auditLogger.LogAsync(CurrentLogin, "Изменён вид работы", $"{workType.Name} | {SpecialtyName(workType.Specialty)}");
             TempData["Success"] = "Изменения сохранены";
         }
         catch (NotFoundException)
@@ -89,6 +112,8 @@ public class IndexModel(
 
         return RedirectToPage();
     }
+
+    private static string SpecialtyName(Specialty? specialty) => specialty?.GetDisplayName() ?? "без специальности";
 
     private string CurrentLogin => HttpContext.GetSessionData()?.Login ?? "?";
 }

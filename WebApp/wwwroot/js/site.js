@@ -7,3 +7,11 @@ document.addEventListener('submit', function (event) {
         event.preventDefault();
     }
 });
+
+// Отправка формы сразу после выбора значения в select с data-autosubmit
+document.addEventListener('change', function (event) {
+    const select = event.target.closest('select[data-autosubmit]');
+    if (select && select.value && select.form) {
+        select.form.requestSubmit ? select.form.requestSubmit() : select.form.submit();
+    }
+});

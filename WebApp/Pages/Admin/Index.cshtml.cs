@@ -1,6 +1,7 @@
 using Domain.Dtos;
 using Domain.Entities;
 using Domain.Exceptions;
+using Domain.Extensions;
 using Domain.Services.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -34,7 +35,7 @@ public class IndexModel(
     public Guid? WorkTypeId { get; set; }
 
     public List<EmployeeListItemDto> Employees { get; private set; } = [];
-    public List<WorkType> WorkTypes { get; private set; } = [];
+    public List<IGrouping<Specialty?, WorkType>> WorkTypeGroups { get; private set; } = [];
 
     /// <summary>Записи, сгруппированные по дням (новые дни первыми)</summary>
     public List<(DateOnly Date, List<WorkLogListItemDto> Logs, decimal DaySum)> Days { get; private set; } = [];
@@ -51,8 +52,7 @@ public class IndexModel(
 
         Employees = (await employeeService.GetAllAsync(cancellationToken))
             .OrderBy(e => e.Name).ToList();
-        WorkTypes = (await workTypeService.GetAllAsync(cancellationToken))
-            .OrderBy(w => w.Name).ToList();
+        WorkTypeGroups = (await workTypeService.GetAllAsync(cancellationToken)).GroupBySpecialty();
 
         var logs = await workLogService.GetByFiltersAsync(new WorkLogFilters
         {

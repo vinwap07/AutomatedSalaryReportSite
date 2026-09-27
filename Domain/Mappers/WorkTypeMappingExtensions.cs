@@ -14,6 +14,8 @@ public static class WorkTypeMappingExtensions
 
     public static void UpdateWorkType(this UpdateWorkTypeRequest request, WorkType workType)
     {
+        // Mapster настроен пропускать null, а null у специальности означает "не назначена"
         request.Adapt(workType);
+        workType.Specialty = request.Specialty;
     }
 }

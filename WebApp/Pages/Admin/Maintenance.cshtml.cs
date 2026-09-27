@@ -61,7 +61,7 @@ public class MaintenanceModel(
                 .Select(e => new { e.Id, e.Name, e.HasTracker })
                 .ToListAsync(cancellationToken),
             WorkTypes = await dbContext.WorkTypes.AsNoTracking()
-                .Select(w => new { w.Id, w.Name })
+                .Select(w => new { w.Id, w.Name, w.Specialty })
                 .ToListAsync(cancellationToken),
             ReasonsForAbsence = await dbContext.ReasonForAbsences.AsNoTracking()
                 .Select(r => new { r.Id, r.Name })

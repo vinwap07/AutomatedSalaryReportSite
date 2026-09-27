@@ -16,6 +16,10 @@ public class WorkTypeConfiguration : IEntityTypeConfiguration<WorkType>
         builder.Property(x => x.Name)
             .HasMaxLength(255);
 
+        builder.Property(x => x.Specialty)
+            .HasConversion<string>()
+            .HasMaxLength(30);
+
         builder.HasIndex(x => x.FarmId);
 
         builder.HasOne<Farm>()

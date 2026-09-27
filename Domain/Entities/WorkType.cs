@@ -17,4 +17,10 @@ public class WorkType : IFarmScoped
     /// Название типа выполняемой работы
     /// </summary>
     public string Name { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Специальность, к которой относится работа (null — не назначена).
+    /// Привязка мягкая: работы специальности показываются работнику первыми, но доступны и остальные
+    /// </summary>
+    public Specialty? Specialty { get; set; }
 }

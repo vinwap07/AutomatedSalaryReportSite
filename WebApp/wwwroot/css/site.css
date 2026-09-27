@@ -50,10 +50,20 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-/* Строка-заголовок дня в журнале */
-tr.day-header td {
+/* Строка-заголовок дня в журнале и группы в справочниках */
+tr.day-header td,
+tr.group-header td {
   background-color: #e7efe7 !important;
   font-weight: 600;
+}
+
+/* Таблица внутри карточки: отступы по краям как у содержимого карточки */
+.card-table td:first-child {
+  padding-left: 1rem;
+}
+
+.card-table td:last-child {
+  padding-right: 1rem;
 }
 
 /* Карточки-таблицы: на мобильных строки превращаются в блоки */
@@ -166,9 +176,30 @@ tr.day-header td {
     vertical-align: middle;
   }
 
+  .entry-table .field-placeholder {
+    display: block;
+    text-align: center;
+  }
+
   .entry-table .form-select,
   .entry-table .form-control {
     font-size: 0.875rem;
+  }
+}
+
+/* Поля записи о работе, зависящие от специальности работника (см. js/work-entry.js) */
+.work-entry.is-laborer .specialist-only,
+.work-entry:not(.is-laborer) .laborer-only,
+.work-entry.is-salary .hide-for-salary,
+.work-entry:not(.is-salary) .salary-only {
+  display: none !important;
+}
+
+/* На мобильных строка ввода — карточка, поэтому ненужные ячейки убираем целиком */
+@media (max-width: 991.98px) {
+  .entry-table .work-entry.is-laborer td.specialist-cell,
+  .entry-table .work-entry.is-salary td.not-salary-cell {
+    display: none;
   }
 }
 

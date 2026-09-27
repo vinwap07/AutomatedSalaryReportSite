@@ -1,7 +1,7 @@
 using Domain.Dtos;
 using Domain.Entities;
+using Domain.Extensions;
 using Domain.Services.Abstractions;
-using Domain.ValueObjects;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using WebApp.Logging;
@@ -11,7 +11,8 @@ namespace WebApp.Pages.Admin;
 
 /// <summary>
 /// Внесение работ за день (как в экселе): таблица строк с выпадающими списками,
-/// кнопки "повторить работников" и "повторить день" копируют данные предыдущего дня
+/// кнопки "повторить работников" и "повторить день" копируют данные предыдущего дня.
+/// Строка разнорабочего вводится без техники и часов, со своими единицами измерения и окладом
 /// </summary>
 public class AddDayModel(
     IWorkLogService workLogService,
@@ -24,34 +25,20 @@ public class AddDayModel(
 {
     private const int MaxPageSize = 100_000;
 
-    /// <summary>
-    /// Одна строка ввода (работа или отсутствие одного работника)
-    /// </summary>
-    public class RowInput
-    {
-        public Guid? EmployeeId { get; set; }
-        public Guid? EquipmentId { get; set; }
-        public Guid? WorkTypeId { get; set; }
-        public int? WorkHours { get; set; }
-        public decimal? Rate { get; set; }
-        public decimal? Volume { get; set; }
-        public UnitOfMeasure? Unit { get; set; }
-        public Guid? ReasonForAbsenceId { get; set; }
-
-        public bool IsEmpty =>
-            EmployeeId == null && EquipmentId == null && WorkTypeId == null && WorkHours == null &&
-            Rate == null && Volume == null && ReasonForAbsenceId == null;
-    }
-
     [BindProperty(SupportsGet = true)]
     public DateOnly Date { get; set; }
 
+    /// <summary>Строки ввода: работа или отсутствие одного работника</summary>
     [BindProperty]
-    public List<RowInput> Rows { get; set; } = [];
+    public List<WorkEntryInput> Rows { get; set; } = [];
 
     public List<EmployeeListItemDto> Employees { get; private set; } = [];
     public List<Domain.Entities.Equipment> EquipmentList { get; private set; } = [];
     public List<WorkType> WorkTypes { get; private set; } = [];
+
+    /// <summary>Виды работ по специальностям (неназначенные первыми)</summary>
+    public List<IGrouping<Specialty?, WorkType>> WorkTypeGroups { get; private set; } = [];
+
     public List<ReasonForAbsence> Reasons { get; private set; } = [];
 
     /// <summary>Последний день с записями до выбранной даты (источник для копирования)</summary>
@@ -82,26 +69,16 @@ public class AddDayModel(
                 ? previousLogs
                     .Select(l => l.Employee.Id)
                     .Distinct()
-                    .Select(id => new RowInput { EmployeeId = id })
+                    .Select(id => new WorkEntryInput { EmployeeId = id })
                     .ToList()
                 : previousLogs
-                    .Select(l => new RowInput
-                    {
-                        EmployeeId = l.Employee.Id,
-                        EquipmentId = l.Equipment?.Id,
-                        WorkTypeId = l.WorkType?.Id,
-                        WorkHours = l.WorkHours,
-                        Rate = l.WorkCost?.Rate,
-                        Volume = l.WorkCost?.Volume,
-                        Unit = l.WorkCost?.UnitOfMeasure,
-                        ReasonForAbsenceId = l.ReasonForAbsence?.Id,
-                    })
+                    .Select(WorkEntryInput.FromLog)
                     .ToList();
         }
 
         if (Rows.Count == 0)
         {
-            Rows = [new RowInput(), new RowInput(), new RowInput()];
+            Rows = [new WorkEntryInput(), new WorkEntryInput(), new WorkEntryInput()];
         }
     }
 
@@ -130,13 +107,9 @@ public class AddDayModel(
                 RowErrors.Add($"Строка {rowNumber}: выберите вид работы или причину отсутствия");
             }
             // Списки загружены с учетом фермы: чужие записи в форму не попадут
-            foreach (var error in ValidateReferences(row))
+            foreach (var error in ValidateReferences(row).Concat(row.ValidatePayment(IsLaborer(row.EmployeeId))))
             {
                 RowErrors.Add($"Строка {rowNumber}: {error}");
-            }
-            if (row.Rate != null ^ row.Volume != null)
-            {
-                RowErrors.Add($"Строка {rowNumber}: для расчёта суммы нужны и расценка, и объём");
             }
         }
 
@@ -151,17 +124,17 @@ public class AddDayModel(
 
         foreach (var row in filledRows)
         {
-            var workCost = row.Rate != null && row.Volume != null
-                ? new WorkCost(row.Rate.Value, row.Volume.Value, row.Unit ?? UnitOfMeasure.Ton)
-                : null;
+            var isLaborer = IsLaborer(row.EmployeeId);
+            var workCost = row.GetWorkCost(isLaborer);
+            var workHours = row.GetWorkHours(isLaborer);
 
             await workLogService.CreateAsync(new CreateWorkLogRequest
             {
                 EmployeeId = row.EmployeeId!.Value,
                 Date = Date,
-                EquipmentId = row.EquipmentId,
+                EquipmentId = row.GetEquipmentId(isLaborer),
                 WorkTypeId = row.WorkTypeId,
-                WorkHours = row.WorkHours,
+                WorkHours = workHours,
                 WorkCost = workCost,
                 ReasonForAbsenceId = row.ReasonForAbsenceId,
             }, cancellationToken);
@@ -171,7 +144,7 @@ public class AddDayModel(
                 ? WorkTypes.FirstOrDefault(w => w.Id == row.WorkTypeId)?.Name ?? "?"
                 : Reasons.FirstOrDefault(r => r.Id == row.ReasonForAbsenceId)?.Name ?? "?";
             await auditLogger.LogAsync(login, "Добавлена запись о работе",
-                $"{Date:yyyy-MM-dd} | {employeeName} | {workName} | часы: {row.WorkHours?.ToString() ?? "-"} | сумма: {(workCost?.Total.ToString("0.##") ?? "-")}");
+                $"{Date:yyyy-MM-dd} | {employeeName} | {workName} | часы: {workHours?.ToString() ?? "-"} | сумма: {(workCost?.Total.ToString("0.##") ?? "-")}");
         }
 
         TempData["Success"] = $"Добавлено записей: {filledRows.Count} (за {Date:dd.MM.yyyy})";
@@ -183,9 +156,15 @@ public class AddDayModel(
     }
 
     /// <summary>
+    /// Является ли работник разнорабочим (от этого зависит набор полей строки)
+    /// </summary>
+    public bool IsLaborer(Guid? employeeId) =>
+        Employees.FirstOrDefault(e => e.Id == employeeId)?.Specialty == Specialty.Laborer;
+
+    /// <summary>
     /// Проверяет, что все выбранные в строке справочники относятся к ферме текущего пользователя
     /// </summary>
-    private IEnumerable<string> ValidateReferences(RowInput row)
+    private IEnumerable<string> ValidateReferences(WorkEntryInput row)
     {
         if (row.EmployeeId != null && Employees.All(e => e.Id != row.EmployeeId))
         {
@@ -213,6 +192,7 @@ public class AddDayModel(
             .OrderBy(e => e.Name).ToList();
         WorkTypes = (await workTypeService.GetAllAsync(cancellationToken))
             .OrderBy(w => w.Name).ToList();
+        WorkTypeGroups = WorkTypes.GroupBySpecialty();
         Reasons = (await reasonForAbsenceService.GetAllAsync(cancellationToken))
             .OrderBy(r => r.Name).ToList();
     }
