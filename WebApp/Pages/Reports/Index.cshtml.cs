@@ -4,6 +4,7 @@ using Domain.Services.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using WebApp.Middlewares;
+using WebApp.Reports;
 
 namespace WebApp.Pages.Reports;
 
@@ -47,7 +48,29 @@ public class IndexModel(
     public int WorkDaysCount { get; private set; }
     public int AbsenceCount { get; private set; }
 
-    public async Task OnGetAsync(CancellationToken cancellationToken)
+    public Task OnGetAsync(CancellationToken cancellationToken) =>
+        LoadReportAsync(cancellationToken);
+
+    public async Task<IActionResult> OnGetExcelAsync(CancellationToken cancellationToken)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest("Проверьте даты и работника.");
+        }
+
+        await LoadReportAsync(cancellationToken);
+        if (!IsAdmin && OwnEmployee == null)
+        {
+            return RedirectToPage();
+        }
+
+        return File(
+            WorkReportExcel.Create(this),
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            $"report-{From:yyyy-MM-dd}-{To:yyyy-MM-dd}.xlsx");
+    }
+
+    private async Task LoadReportAsync(CancellationToken cancellationToken)
     {
         var session = HttpContext.GetSessionData();
         IsAdmin = session?.Role == Role.Admin;
